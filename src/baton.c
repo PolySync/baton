@@ -135,6 +135,7 @@ baton_result_t baton_get_firmware_version(
 
     if( result != BATON_ERROR )
     {
+        /* command is of the form 'ver' */
         command_length = snprintf( command, sizeof(command), "ver\r" );
 
         if ( command_length < 0 )
@@ -196,6 +197,8 @@ baton_result_t baton_set_id(
 
     if ( result != BATON_ERROR )
     {
+        /* command is of the form 'id set XXXXXXXX' where XXXXXXXX is a number
+           between 0 and 99999999, padded with zeroes */
         command_length = snprintf( command, sizeof(command), "id set %08lu\r", id );
 
         if ( command_length < 0 )
@@ -246,6 +249,7 @@ baton_result_t baton_get_id(
 
     if( result != BATON_ERROR )
     {
+        /* command is of the form 'id get' */
         command_length = snprintf( command, sizeof(command), "id get\r" );
 
         if ( command_length < 0 )
@@ -279,6 +283,86 @@ baton_result_t baton_get_id(
             printf( "read_response() error\n" );
 
             result = BATON_ERROR;
+        }
+    }
+
+
+    return result;
+}
+
+
+baton_result_t baton_get_relay_status(
+    int const fd,
+    unsigned int const relay,
+    baton_relay_status_t *status )
+{
+    int result = BATON_SUCCESS;
+    int ret = -1;
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    /* command is of the form 'relay read X' where X is represented as a single
+       uppercase hex digit */
+    command_length = snprintf( command, sizeof(command), "relay read %X\r", relay );
+
+    if ( command_length < 0 )
+    {
+        printf( "snprintf() error\n" );
+
+        result = BATON_ERROR;
+    }
+
+    if( result != BATON_ERROR )
+    {
+        ret = write_command( fd, command, command_length );
+
+        if( ret != BATON_SUCCESS )
+        {
+            printf( "write_command() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+    char rx_buf[BUFFER_LENGTH] = {0};
+
+    if( result != BATON_ERROR )
+    {
+        ret = read_response( fd, rx_buf, sizeof(rx_buf) );
+
+        if( ret != BATON_SUCCESS )
+        {
+            printf( "read_response() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if( result != BATON_ERROR )
+    {
+        ret = strncmp( rx_buf, "on", sizeof(rx_buf) );
+
+        if ( ret == 0 )
+        {
+            *status = BATON_RELAY_ON;
+        }
+        else
+        {
+            ret = strncmp( rx_buf, "off", sizeof(rx_buf) );
+
+            if ( ret == 0 )
+            {
+                *status = BATON_RELAY_OFF;
+            }
+            else
+            {
+                printf( "baton_get_relay_status(): invalid response from relay\n" );
+
+                result = BATON_ERROR;
+            }
         }
     }
 

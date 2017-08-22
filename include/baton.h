@@ -12,9 +12,22 @@ typedef enum {
     /* Result of the operation was successful. */
     BATON_SUCCESS,
 
-    /* Result of the operaton was unsuccessful due to an error. */
-    BATON_ERROR
+    /* Result of the operation was unsuccessful due to an error. */
+    BATON_ERROR,
 } baton_result_t;
+
+
+/**
+ * @brief Enumeration of possible relay statuses.
+ *
+ */
+ typedef enum {
+    /* Relay is on. */
+    BATON_RELAY_ON,
+
+    /* Relay is off. */
+    BATON_RELAY_OFF
+} baton_relay_status_t;
 
 
 /**
@@ -80,3 +93,20 @@ baton_result_t baton_get_id(
     int const fd,
     char * const rx_buf,
     int const rx_buf_length );
+
+
+/**
+ * @brief Get the status of a specific relay.
+ *
+ * @param [in] fd - The file descriptor of the serial interface.
+ *        [in] relay - Number of relay to query.
+ *        [out] status - The status of the relay.
+ *
+ * @return BATON_SUCCESS - Query was successful and rx_buf contains a valid response.
+ *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
+ *
+ */
+ baton_result_t baton_get_relay_status(
+    int const fd,
+    unsigned int const relay,
+    baton_relay_status_t *status );
