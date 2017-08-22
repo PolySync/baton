@@ -48,3 +48,35 @@ baton_result_t baton_get_firmware_version(
     int const fd,
     char * const rx_buf,
     int const rx_buf_length );
+
+
+/**
+ * @brief Set the ID of the relay module.
+ *
+ * @param [in] fd - The file descriptor of the serial interface.
+ *        [in] id - ID to set.
+ *
+ * @return BATON_SUCCESS - Setting the ID was successful.
+ *         BATON_ERROR - Setting the ID was not successful.
+ *
+ */
+baton_result_t baton_set_id(
+    int const fd,
+    unsigned long const id );
+
+
+/**
+ * @brief Get the ID of the relay module.
+ *
+ * @param [in] fd - The file descriptor of the serial interface.
+ *        [out] rx_buf - The buffer in which to return the response.
+ *        [in] rx_buf_length - The length of rx_buf.
+ *
+ * @return BATON_SUCCESS - Query was successful and rx_buf contains a valid response.
+ *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
+ *
+ */
+baton_result_t baton_get_id(
+    int const fd,
+    char * const rx_buf,
+    int const rx_buf_length );

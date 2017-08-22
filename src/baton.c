@@ -124,7 +124,7 @@ baton_result_t baton_get_firmware_version(
 
     if ( rx_buf == NULL )
     {
-        printf( "baton_get_firmware_version(): rx_buf is a null pointer");
+        printf( "baton_get_firmware_version(): rx_buf is a null pointer\n");
 
         result = BATON_ERROR;
     }
@@ -136,6 +136,117 @@ baton_result_t baton_get_firmware_version(
     if( result != BATON_ERROR )
     {
         command_length = snprintf( command, sizeof(command), "ver\r" );
+
+        if ( command_length < 0 )
+        {
+            printf( "snprintf() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if( result != BATON_ERROR )
+    {
+        ret = write_command( fd, command, command_length );
+
+        if( ret != BATON_SUCCESS )
+        {
+            printf( "write_command() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if( result != BATON_ERROR )
+    {
+        ret = read_response( fd, rx_buf, rx_buf_length );
+
+        if( ret != BATON_SUCCESS )
+        {
+            printf( "read_response() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    return result;
+}
+
+
+baton_result_t baton_set_id(
+    int const fd,
+    unsigned long const id )
+{
+    int result = BATON_SUCCESS;
+    int ret = -1;
+
+    if ( id > 99999999 )
+    {
+        printf( "baton_set_id(): ID must be between 0 and 99999999\n" );
+
+        result = BATON_ERROR;
+    }
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    if ( result != BATON_ERROR )
+    {
+        command_length = snprintf( command, sizeof(command), "id set %08lu\r", id );
+
+        if ( command_length < 0 )
+        {
+            printf( "snprintf() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if ( result != BATON_ERROR )
+    {
+        ret = write( fd, command, sizeof(command) );
+
+        if ( ret < 0 )
+        {
+            printf( "write() error: %s\n", strerror(errno) );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    return result;
+}
+
+
+baton_result_t baton_get_id(
+    int const fd,
+    char * const rx_buf,
+    int const rx_buf_length )
+{
+    int result = BATON_SUCCESS;
+    int ret = -1;
+
+
+    if ( rx_buf == NULL )
+    {
+        printf( "baton_get_id(): rx_buf is a null pointer\n");
+
+        result = BATON_ERROR;
+    }
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    if( result != BATON_ERROR )
+    {
+        command_length = snprintf( command, sizeof(command), "id get\r" );
 
         if ( command_length < 0 )
         {
