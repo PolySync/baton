@@ -113,6 +113,69 @@ baton_result_t baton_init(
 }
 
 
+baton_result_t baton_get_firmware_version(
+    int const fd,
+    char * const rx_buf,
+    int const rx_buf_length )
+{
+    int result = BATON_SUCCESS;
+    int ret = -1;
+
+
+    if ( rx_buf == NULL )
+    {
+        printf( "baton_get_firmware_version(): rx_buf is a null pointer");
+
+        result = BATON_ERROR;
+    }
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    if( result != BATON_ERROR )
+    {
+        command_length = snprintf( command, sizeof(command), "ver\r" );
+
+        if ( command_length < 0 )
+        {
+            printf( "snprintf() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if( result != BATON_ERROR )
+    {
+        ret = write_command( fd, command, command_length );
+
+        if( ret != BATON_SUCCESS )
+        {
+            printf( "write_command() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if( result != BATON_ERROR )
+    {
+        ret = read_response( fd, rx_buf, rx_buf_length );
+
+        if( ret != BATON_SUCCESS )
+        {
+            printf( "read_response() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    return result;
+}
+
+
 static baton_result_t write_command(
     int const fd,
     char const * const command,
