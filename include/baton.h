@@ -14,6 +14,10 @@ typedef enum {
 
     /* Result of the operation was unsuccessful due to an error. */
     BATON_ERROR,
+
+    /* The operation was ignored because the requested action would do nothing
+        (e.g.,  enabling a relay that is already enabled). */
+    BATON_IGNORED
 } baton_result_t;
 
 
@@ -106,7 +110,39 @@ baton_result_t baton_get_id(
  *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
  *
  */
- baton_result_t baton_get_relay_status(
+baton_result_t baton_get_relay_status(
     int const fd,
     unsigned int const relay,
     baton_relay_status_t *status );
+
+
+/**
+ * @brief Enable a specific relay.
+ *
+ * @param [in] fd - The file descriptor of the serial interface.
+ *        [in] relay - Number of relay to enable.
+ *
+ * @return BATON_SUCCESS - Enabling the relay was successful.
+ *         BATON_ERROR - Enabling the relay was unsuccessful.
+ *         BATON_IGNORED - The relay was not enabled because it is already enabled.
+ *
+ */
+baton_result_t baton_enable_relay(
+    int const fd,
+    unsigned int const relay );
+
+
+/**
+ * @brief Disable a specific relay.
+ *
+ * @param [in] fd - The file descriptor of the serial interface.
+ *        [in] relay - Number of relay to disable.
+ *
+ * @return BATON_SUCCESS - Enabling the relay was successful.
+ *         BATON_ERROR - Enabling the relay was unsuccessful.
+ *         BATON_IGNORED - The relay was not disabled because it is already disabled.
+ *
+ */
+baton_result_t baton_disable_relay(
+    int const fd,
+    unsigned int const relay );
