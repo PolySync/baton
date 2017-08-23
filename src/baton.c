@@ -11,6 +11,19 @@
 #include "baton.h"
 
 
+#define PRINT_ERROR( message, submessage ) (\
+        fprintf( stderr, "ERROR\n"\
+                "  FILE: %s\n"\
+                "  FUNC: %s\n"\
+                "  LINE: %d\n"\
+                "  DESC: %s %s\n\n",\
+                __FILE__,\
+                __FUNCTION__,\
+                __LINE__,\
+                (message),\
+                (submessage) ))
+
+
 /**
  * @brief Length of transmit and receive buffers.
  *
@@ -38,19 +51,30 @@ baton_result_t baton_init(
     int ret = -1;
 
 
-    struct termios tty_config;
-    memset( &tty_config, 0, sizeof( tty_config) );
-
-
-    *fd = open( port, O_RDWR | O_NOCTTY | O_SYNC );
-
-    if ( *fd < 0 )
+    if ( (port == NULL)
+        || (fd == NULL) )
     {
-        printf( "open() error: %s\n", strerror(errno) );
+        PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
 
+
+    if ( result == BATON_SUCCESS )
+    {
+        *fd = open( port, O_RDWR | O_NOCTTY | O_SYNC );
+
+        if ( *fd < 0 )
+        {
+            PRINT_ERROR( "open() error:", strerror(errno) );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    struct termios tty_config;
+    memset( &tty_config, 0, sizeof( tty_config) );
 
     if ( result == BATON_SUCCESS )
     {
@@ -59,7 +83,7 @@ baton_result_t baton_init(
 
         if ( ret != 0 )
         {
-            printf( "tcgetattr() error: %s\n", strerror(errno) );
+            PRINT_ERROR( "tcgetattr() error:", strerror(errno) );
 
             result = BATON_ERROR;
         }
@@ -73,7 +97,7 @@ baton_result_t baton_init(
 
         if ( ret != 0 )
         {
-            printf( "cfsetospeed() error: %s\n", strerror(errno) );
+            PRINT_ERROR( "cfsetospeed() error:", strerror(errno) );
 
             result = BATON_ERROR;
         }
@@ -87,7 +111,7 @@ baton_result_t baton_init(
 
         if ( ret != 0 )
         {
-            printf( "cfsetispeed() error: %s\n", strerror(errno) );
+            PRINT_ERROR( "cfsetispeed() error:", strerror(errno) );
 
             result = BATON_ERROR;
         }
@@ -107,7 +131,7 @@ baton_result_t baton_init(
 
         if ( ret != 0 )
         {
-            printf( "tcsetattr() error: %s\n", strerror(errno) );
+            PRINT_ERROR( "tcsetattr() error:", strerror(errno) );
         }
     }
 
@@ -127,7 +151,7 @@ baton_result_t baton_get_firmware_version(
 
     if ( rx_buf == NULL )
     {
-        printf( "baton_get_firmware_version(): rx_buf is a null pointer\n");
+        PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
@@ -143,7 +167,7 @@ baton_result_t baton_get_firmware_version(
 
         if ( command_length < 0 )
         {
-            printf( "snprintf() error\n" );
+            PRINT_ERROR( "snprintf() error", "" );
 
             result = BATON_ERROR;
         }
@@ -156,7 +180,7 @@ baton_result_t baton_get_firmware_version(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
@@ -169,7 +193,7 @@ baton_result_t baton_get_firmware_version(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "read_response() error\n" );
+            PRINT_ERROR( "read_response() error", "" );
 
             result = BATON_ERROR;
         }
@@ -190,7 +214,7 @@ baton_result_t baton_set_id(
 
     if ( id > 99999999 )
     {
-        printf( "baton_set_id(): ID must be between 0 and 99999999\n" );
+        PRINT_ERROR( "id must be between 0 and 99999999", "" );
 
         result = BATON_ERROR;
     }
@@ -207,7 +231,7 @@ baton_result_t baton_set_id(
 
         if ( command_length < 0 )
         {
-            printf( "snprintf() error\n" );
+            PRINT_ERROR( "snprintf() error", "" );
 
             result = BATON_ERROR;
         }
@@ -220,7 +244,7 @@ baton_result_t baton_set_id(
 
         if( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
@@ -242,7 +266,7 @@ baton_result_t baton_get_id(
 
     if ( rx_buf == NULL )
     {
-        printf( "baton_get_id(): rx_buf is a null pointer\n");
+        PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
@@ -258,7 +282,7 @@ baton_result_t baton_get_id(
 
         if ( command_length < 0 )
         {
-            printf( "snprintf() error\n" );
+            PRINT_ERROR( "snprintf() error", "" );
 
             result = BATON_ERROR;
         }
@@ -271,7 +295,7 @@ baton_result_t baton_get_id(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
@@ -284,7 +308,7 @@ baton_result_t baton_get_id(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "read_response() error\n" );
+            PRINT_ERROR( "read_response() error", "" );
 
             result = BATON_ERROR;
         }
@@ -304,19 +328,31 @@ baton_result_t baton_get_relay_status(
     int ret = -1;
 
 
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
-
-    /* command is of the form 'relay read X' where X is represented as a single
-       uppercase hex digit */
-    command_length = snprintf( command, sizeof(command), "relay read %X\r", relay );
-
-    if ( command_length < 0 )
+    if ( status == NULL )
     {
-        printf( "snprintf() error\n" );
+        PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    if ( result == BATON_SUCCESS )
+    {
+        /* command is of the form 'relay read X' where X is represented as a single
+        uppercase hex digit */
+        command_length = snprintf( command, sizeof(command), "relay read %X\r", relay );
+
+        if ( command_length < 0 )
+        {
+            PRINT_ERROR( "snprintf() error", "" );
+
+            result = BATON_ERROR;
+        }
+    }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -324,11 +360,12 @@ baton_result_t baton_get_relay_status(
 
         if( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
     }
+
 
     char rx_buf[BUFFER_LENGTH] = {0};
 
@@ -338,7 +375,7 @@ baton_result_t baton_get_relay_status(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "read_response() error\n" );
+            PRINT_ERROR( "read_response() error", "" );
 
             result = BATON_ERROR;
         }
@@ -363,7 +400,7 @@ baton_result_t baton_get_relay_status(
             }
             else
             {
-                printf( "baton_get_relay_status(): invalid response from relay\n" );
+                PRINT_ERROR( "invalid response from relay", "" );
 
                 result = BATON_ERROR;
             }
@@ -383,18 +420,30 @@ baton_result_t baton_get_relay_status_by_bitfield(
     int ret = -1;
 
 
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
-
-    /* command is of the form 'relay readall' */
-    command_length = snprintf( command, sizeof(command), "relay readall\r" );
-
-    if ( command_length < 0 )
+    if ( bitfield == NULL )
     {
-        printf( "snprintf() error\n" );
+        PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    if ( result == BATON_SUCCESS )
+    {
+        /* command is of the form 'relay readall' */
+        command_length = snprintf( command, sizeof(command), "relay readall\r" );
+
+        if ( command_length < 0 )
+        {
+            PRINT_ERROR( "snprintf() error", "" );
+
+            result = BATON_ERROR;
+        }
+    }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -402,11 +451,12 @@ baton_result_t baton_get_relay_status_by_bitfield(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
     }
+
 
     char rx_buf[BUFFER_LENGTH] = {0};
 
@@ -416,11 +466,12 @@ baton_result_t baton_get_relay_status_by_bitfield(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "read_response() error\n" );
+            PRINT_ERROR( "read_response() error", "" );
 
             result = BATON_ERROR;
         }
     }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -446,7 +497,9 @@ baton_result_t baton_enable_relay(
 
     if ( result != BATON_SUCCESS )
     {
-        printf( "baton_enable_relay(): could not query relay for current status\n" );
+        PRINT_ERROR( "baton_get_relay_status() error", "" );
+
+        result == BATON_ERROR;
     }
     else
     {
@@ -469,7 +522,7 @@ baton_result_t baton_enable_relay(
 
         if ( command_length < 0 )
         {
-            printf( "snprintf() error\n" );
+            PRINT_ERROR( "snprintf() error", "" );
 
             result = BATON_ERROR;
         }
@@ -482,7 +535,7 @@ baton_result_t baton_enable_relay(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
@@ -507,7 +560,9 @@ baton_result_t baton_disable_relay(
 
     if (result != BATON_SUCCESS )
     {
-        printf( "baton_disable_relay(): could not query relay for current status\n" );
+        PRINT_ERROR( "baton_get_relay_status() error", "" );
+
+        result = BATON_ERROR;
     }
     else
     {
@@ -530,7 +585,7 @@ baton_result_t baton_disable_relay(
 
         if ( command_length < 0 )
         {
-            printf( "snprintf() error\n" );
+            PRINT_ERROR( "snprintf() error", "" );
 
             result = BATON_ERROR;
         }
@@ -543,7 +598,7 @@ baton_result_t baton_disable_relay(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
@@ -564,9 +619,7 @@ baton_result_t baton_toggle_relays_by_bitfield(
 
     if ( bitfield > 0xFFFF )
     {
-        printf(
-            "baton_toggle_relays_by_bitfield(): bitfield must be between 0x0000 "
-            "and 0xFFFF\n" );
+        PRINT_ERROR( "bitfield must be between 0x0000 and 0xFFFF", "" );
 
         result = BATON_ERROR;
     }
@@ -584,7 +637,7 @@ baton_result_t baton_toggle_relays_by_bitfield(
 
         if ( command_length < 0 )
         {
-            printf( "snprintf() error\n" );
+            PRINT_ERROR( "snprintf() error", "" );
 
             result = BATON_ERROR;
         }
@@ -597,7 +650,7 @@ baton_result_t baton_toggle_relays_by_bitfield(
 
         if ( ret != BATON_SUCCESS )
         {
-            printf( "write_command() error\n" );
+            PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
         }
@@ -616,15 +669,27 @@ static baton_result_t write_command(
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
 
-    /* send a single carriage return to tell the relay to get into
-       a state where it is ready to accept further commands */
-    ret = write( fd, "\r", 1 );
 
-    if ( ret < 0 )
+    if ( command == NULL )
     {
-        printf( "write() error: %s\n", strerror(errno) );
+        PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        /* send a single carriage return to tell the relay to get into
+        a state where it is ready to accept further commands */
+        ret = write( fd, "\r", 1 );
+
+        if ( ret < 0 )
+        {
+            PRINT_ERROR( "write() error:", strerror(errno) );
+
+            result = BATON_ERROR;
+        }
     }
 
 
@@ -637,7 +702,7 @@ static baton_result_t write_command(
 
         if ( ret < 0 )
         {
-            printf( "read() error: %s\n", strerror(errno) );
+            PRINT_ERROR( "read() error:", strerror(errno) );
 
             result = BATON_ERROR;
         }
@@ -651,7 +716,7 @@ static baton_result_t write_command(
 
         if ( ret < 0 )
         {
-            printf( "write() error: %s\n", strerror(errno) );
+            PRINT_ERROR( "write() error:", strerror(errno) );
 
             result = BATON_ERROR;
         }
@@ -671,7 +736,7 @@ static baton_result_t write_command(
 
             if ( ret < 0 )
             {
-                printf( "read() error: %s\n", strerror(errno) );
+                PRINT_ERROR( "read() error:", strerror(errno) );
 
                 result = BATON_ERROR;
             }
@@ -692,34 +757,45 @@ static baton_result_t read_response(
     int ret = -1;
 
 
-    /* the response must be read one byte at a time until a line feed is
-       read, indicating the end of the response */
-    char read_byte = 0;
-    int response_index = 0;
-
-    while( (read_byte != '>')
-            && (result == BATON_SUCCESS) )
+    if ( response == NULL )
     {
-        ret = read( fd, &read_byte, 1 );
+        PRINT_ERROR( "null pointer argument", "" );
 
-        if ( ret < 0 )
+        result = BATON_ERROR;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        /* the response must be read one byte at a time until a line feed is
+        read, indicating the end of the response */
+        char read_byte = 0;
+        int response_index = 0;
+
+        while( (read_byte != '>')
+                && (result == BATON_SUCCESS) )
         {
-            printf( "read() error: %s\n", strerror(errno) );
+            ret = read( fd, &read_byte, 1 );
 
-            result = BATON_ERROR;
-        }
-        else
-        {
-            /* if byte is not alphanumeric, discard */
-            ret = isalnum( read_byte );
-
-            if ( ret != 0 )
+            if ( ret < 0 )
             {
-                /* do not write a response longer than the buffer can hold */
-                if ( response_index < length )
+                PRINT_ERROR( "read() error:", strerror(errno) );
+
+                result = BATON_ERROR;
+            }
+            else
+            {
+                /* if byte is not alphanumeric, discard */
+                ret = isalnum( read_byte );
+
+                if ( ret != 0 )
                 {
-                    response[response_index] = read_byte;
-                    ++response_index;
+                    /* do not write a response longer than the buffer can hold */
+                    if ( response_index < length )
+                    {
+                        response[response_index] = read_byte;
+                        ++response_index;
+                    }
                 }
             }
         }
