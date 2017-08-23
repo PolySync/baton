@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
@@ -367,6 +368,63 @@ baton_result_t baton_get_relay_status(
                 result = BATON_ERROR;
             }
         }
+    }
+
+
+    return result;
+}
+
+
+baton_result_t baton_get_relay_status_by_bitfield(
+    int const fd,
+    unsigned long * bitfield )
+{
+    baton_result_t result = BATON_SUCCESS;
+    int ret = -1;
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    /* command is of the form 'relay readall' */
+    command_length = snprintf( command, sizeof(command), "relay readall\r" );
+
+    if ( command_length < 0 )
+    {
+        printf( "snprintf() error\n" );
+
+        result = BATON_ERROR;
+    }
+
+    if ( result == BATON_SUCCESS )
+    {
+        ret = write_command( fd, command, command_length );
+
+        if ( ret != BATON_SUCCESS )
+        {
+            printf( "write_command() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+    char rx_buf[BUFFER_LENGTH] = {0};
+
+    if ( result == BATON_SUCCESS )
+    {
+        ret = read_response( fd, rx_buf, sizeof(rx_buf) );
+
+        if ( ret != BATON_SUCCESS )
+        {
+            printf( "read_response() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+    if ( result == BATON_SUCCESS )
+    {
+        *bitfield = strtoul( rx_buf, NULL, 16 );
     }
 
 

@@ -113,7 +113,24 @@ baton_result_t baton_get_id(
 baton_result_t baton_get_relay_status(
     int const fd,
     unsigned int const relay,
-    baton_relay_status_t *status );
+    baton_relay_status_t * status );
+
+
+/**
+ * @brief Get the status of all relays.
+ *
+ * @param [in] fd - The file descriptor of the serial interface.
+ *        [out] bitfield - Bitfield representing statuses of the relays where a
+ *                       1 in bit position N means relay N is enabled and a
+ *                       0 in bit position N means relay N is disabled.
+ *
+ * @return BATON_SUCCESS - Query was successful and rx_buf contains a valid response.
+ *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
+ *
+ */
+ baton_result_t baton_get_relay_status_by_bitfield(
+    int const fd,
+    unsigned long * bitfield );
 
 
 /**
