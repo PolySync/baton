@@ -496,6 +496,60 @@ baton_result_t baton_disable_relay(
 }
 
 
+baton_result_t baton_toggle_relays_by_bitfield(
+    int const fd,
+    unsigned int const bitfield )
+{
+    baton_result_t result = BATON_SUCCESS;
+    int ret = -1;
+
+
+    if ( bitfield > 0xFFFF )
+    {
+        printf(
+            "baton_toggle_relays_by_bitfield(): bitfield must be between 0x0000 "
+            "and 0xFFFF\n" );
+
+        result = BATON_ERROR;
+    }
+
+
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+
+    if ( result == BATON_SUCCESS )
+    {
+        /* command is of the form 'relay writeall XXXX' where XXXX is a bitfield
+           between 00000 and ffff, where a 1 in bit position N enables relay
+           N and a 0 in bit position N disables relay N */
+        command_length = snprintf( command, sizeof(command), "relay writeall %04x\r", bitfield );
+
+        if ( command_length < 0 )
+        {
+            printf( "snprintf() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        ret = write_command( fd, command, command_length );
+
+        if ( ret != BATON_SUCCESS )
+        {
+            printf( "write_command() error\n" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    return result;
+}
+
+
 static baton_result_t write_command(
     int const fd,
     char const * const command,

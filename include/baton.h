@@ -146,3 +146,20 @@ baton_result_t baton_enable_relay(
 baton_result_t baton_disable_relay(
     int const fd,
     unsigned int const relay );
+
+
+/**
+ * @brief Toggle relays on and off using a bitfield.
+ *
+ * @param [in] fd - The file descriptor of the serial interface.
+ *        [in] bitfield - Bitfield representing the relays, where a 1 in
+ *                        bit position N enables relay N and a 0 in bit position
+ *                        N disables relay N.
+ *
+ * @return BATON_SUCCESS - Toggling the relays was successful.
+ *         BATON_ERROR - Toggling the relays was unsuccessful.
+ *
+ */
+ baton_result_t baton_toggle_relays_by_bitfield(
+    int const fd,
+    unsigned int const bitfield );
