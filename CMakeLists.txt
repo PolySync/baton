@@ -2,17 +2,21 @@ cmake_minimum_required(VERSION 2.8)
 
 project(baton)
 
+
 add_library(
-    libbaton
+    libbaton-static
     STATIC
     src/baton.c)
 
 target_include_directories(
-    libbaton
+    libbaton-static
     PRIVATE
     include)
 
-SET_TARGET_PROPERTIES(
-    libbaton
+set_target_properties(
+    libbaton-static
     PROPERTIES
     OUTPUT_NAME baton)
+
+
+add_subdirectory(tests)
