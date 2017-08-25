@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,7 @@
 #include <unistd.h>
 
 #include "baton.h"
+#include "internal/baton.h"
 
 
 #define PRINT_ERROR( message, submessage ) (\
@@ -29,17 +31,6 @@
  *
  */
 #define BUFFER_LENGTH ( 25 )
-
-
-static baton_result_t write_command(
-    int const fd,
-    char const * const command,
-    int const length );
-
-static baton_result_t read_response(
-    int const fd,
-    char * const response,
-    int const length );
 
 
 baton_result_t baton_init(
@@ -95,7 +86,7 @@ baton_result_t baton_init(
         /* set output baud rate */
         ret = cfsetospeed( &tty_config, speed );
 
-        if ( ret != 0 )
+        if ( ret != speed )
         {
             PRINT_ERROR( "cfsetospeed() error:", strerror(errno) );
 
@@ -109,7 +100,7 @@ baton_result_t baton_init(
         /* set input  baud rate */
         ret = cfsetispeed( &tty_config, speed );
 
-        if ( ret != 0 )
+        if ( ret != speed )
         {
             PRINT_ERROR( "cfsetispeed() error:", strerror(errno) );
 
@@ -132,6 +123,8 @@ baton_result_t baton_init(
         if ( ret != 0 )
         {
             PRINT_ERROR( "tcsetattr() error:", strerror(errno) );
+
+            result = BATON_ERROR;
         }
     }
 
@@ -476,6 +469,13 @@ baton_result_t baton_get_relay_status_by_bitfield(
     if ( result == BATON_SUCCESS )
     {
         *bitfield = strtoul( rx_buf, NULL, 16 );
+
+        if ( *bitfield == ULONG_MAX )
+        {
+            PRINT_ERROR( "strtoul() error: ", strerror(errno) );
+
+            result = BATON_ERROR;
+        }
     }
 
 
@@ -661,7 +661,10 @@ baton_result_t baton_toggle_relays_by_bitfield(
 }
 
 
-static baton_result_t write_command(
+
+
+/* Internal */
+baton_result_t write_command(
     int const fd,
     char const * const command,
     int const length )
@@ -748,7 +751,7 @@ static baton_result_t write_command(
 }
 
 
-static baton_result_t read_response(
+baton_result_t read_response(
     int const fd,
     char * const response,
     int const length )

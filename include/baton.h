@@ -4,6 +4,10 @@
  */
 
 
+ #ifndef _BATON_H_
+ #define _BATON_H_
+
+
 /**
  * @brief Enumeration of possible error values.
  *
@@ -180,3 +184,6 @@ baton_result_t baton_disable_relay(
  baton_result_t baton_toggle_relays_by_bitfield(
     int const fd,
     unsigned int const bitfield );
+
+
+#endif /* _BATON_H_ */

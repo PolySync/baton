@@ -1,6 +1,8 @@
 project(unit-tests)
 
 
+add_definitions( -DTESTS )
+
 add_library(
     libbaton-shared
     SHARED
@@ -17,28 +19,90 @@ set_target_properties(
     OUTPUT_NAME baton)
 
 
-add_executable(
-    unit-test
-    ${CMAKE_CURRENT_SOURCE_DIR}/features/step_definitions/test.cpp)
+# generate random port for test to avoid conflicts
+string(
+    RANDOM
+    LENGTH 3
+    ALPHABET "0123456789"
+    PORT_SUFFIX)
 
-target_link_libraries(
-    unit-test
-    PRIVATE
-    libbaton-shared
-    ${CMAKE_SOURCE_DIR}/tests/framework/cucumber-cpp/lib/libcucumber-cpp.a
-    ${CMAKE_SOURCE_DIR}/tests/framework/cgreen/lib/libcgreen.so)
+set(
+    CUCUMBER_PORT
+    "25${PORT_SUFFIX}")
 
-target_include_directories(
-    unit-test
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/tests/framework/cucumber-cpp/include
-    ${CMAKE_SOURCE_DIR}/tests/framework/cgreen/include)
-
+file(
+    GLOB
+    STEP_DEFINITION_SRCS
+    ${CMAKE_CURRENT_SOURCE_DIR}/features/step_definitions/*.cpp)
 
 add_custom_target(
-    run-unit-tests
+    test-steps
     DEPENDS
-    unit-test
-    COMMAND
-    unit-test --port=3902 >/dev/null & cucumber _2.0.0_ ${CMAKE_CURRENT_SOURCE_DIR}/features )
+    libbaton-shared)
+
+add_custom_target(
+    run-test-steps
+    DEPENDS
+    test-steps)
+
+# build individual feature executables
+foreach(STEP_DEFINITION_SRC_FILE ${STEP_DEFINITION_SRCS})
+    # get file name, the foo in foo.c
+    get_filename_component(
+        STEP_DEFINITION_FILE_NAME
+        ${STEP_DEFINITION_SRC_FILE}
+        NAME_WE)
+
+    string(
+        REPLACE "_" "-"
+        STEP_DEFINITION_SOURCE_FILE_TARGET
+        ${STEP_DEFINITION_FILE_NAME})
+
+    set(
+        STEP_TARGET
+        ${STEP_DEFINITION_SOURCE_FILE_TARGET}-steps)
+
+    add_executable(
+        ${STEP_TARGET}
+        EXCLUDE_FROM_ALL
+        ${STEP_DEFINITION_SRC_FILE})
+
+    add_dependencies(
+        test-steps
+        ${STEP_TARGET})
+
+    file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/features/step_definitions/cucumber.wire "host: localhost\nport: ${CUCUMBER_PORT}")
+
+    add_custom_target(
+        run-${STEP_DEFINITION_SOURCE_FILE_TARGET}-steps
+        DEPENDS
+        ${STEP_TARGET}
+        COMMAND
+        ${STEP_TARGET} --port=${CUCUMBER_PORT} >/dev/null & cucumber _2.0.0_ ${CMAKE_CURRENT_SOURCE_DIR}/features/${STEP_DEFINITION_FILE_NAME}.feature)
+
+    add_dependencies(
+        run-test-steps
+        run-${STEP_DEFINITION_SOURCE_FILE_TARGET}-steps)
+
+    target_compile_options(
+        ${STEP_TARGET}
+        PRIVATE
+        -std=c++11
+        -Wall)
+
+    target_include_directories(
+        ${STEP_TARGET}
+        PRIVATE
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/tests/framework/cucumber-cpp/include
+        ${CMAKE_SOURCE_DIR}/tests/framework/cgreen/include)
+
+    target_link_libraries(
+        ${STEP_TARGET}
+        PRIVATE
+        libbaton-shared
+        ${CMAKE_SOURCE_DIR}/tests/framework/cucumber-cpp/lib/libcucumber-cpp.a
+        ${CMAKE_SOURCE_DIR}/tests/framework/cgreen/lib/libcgreen.so)
+
+endforeach(STEP_DEFINITION_SRC_FILE)
