@@ -20,3 +20,4 @@ Feature: Get relay status
     Scenario: Function completes successfully
         Given the function completes without error
         Then the function should return success
+        And the function should return a status

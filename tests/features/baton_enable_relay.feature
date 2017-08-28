@@ -16,3 +16,7 @@ Feature: Enable a specific relay
     Scenario: Function completes successfully
         Given the function completes without error
         Then the function should return success
+
+    Scenario: Enable requested on already enabled relay
+        Given a relay is currently enabled
+        Then the function should ignore the request

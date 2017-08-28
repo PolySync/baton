@@ -16,3 +16,7 @@ Feature: Disable a specific relay
     Scenario: Function completes successfully
         Given the function completes without error
         Then the function should return success
+
+    Scenario: Disable requested on already disabled relay
+        Given a relay is currently disabled
+        Then the function should ignore the request

@@ -8,6 +8,9 @@
  #define _INTERNAL_BATON_H_
 
 
+ #include "baton.h"
+
+
  baton_result_t write_command(
     int const fd,
     char const * const command,

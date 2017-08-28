@@ -58,9 +58,12 @@ GIVEN( "^(.*) returns an error$" )
     }
     else if ( function_name == "write_command()" )
     {
+        baton_relay_status_t relay_status = BATON_RELAY_OFF;
+
         expect(
             baton_get_relay_status,
-            will_return(BATON_SUCCESS) );
+            will_return(BATON_SUCCESS),
+            will_set_contents_of_parameter( status, &relay_status, sizeof(&relay_status)) );
 
         expect(
             write_command,
@@ -76,13 +79,32 @@ GIVEN( "^the function completes without error$" )
 {
     ScenarioScope<state> state;
 
+    baton_relay_status_t relay_status = BATON_RELAY_OFF;
+
     expect(
         baton_get_relay_status,
-        will_return(BATON_SUCCESS) );
+        will_return(BATON_SUCCESS),
+        will_set_contents_of_parameter( status, &relay_status, sizeof(&relay_status)) );
 
     expect(
         write_command,
         will_return(BATON_SUCCESS) );
+
+    state->result = baton_enable_relay(
+        state->fd,
+        0 );
+}
+
+GIVEN( "^a relay is currently enabled$" )
+{
+    ScenarioScope<state> state;
+
+    baton_relay_status_t relay_status = BATON_RELAY_ON;
+
+    expect(
+        baton_get_relay_status,
+        will_return(BATON_SUCCESS),
+        will_set_contents_of_parameter( status, &relay_status, sizeof(&relay_status)) );
 
     state->result = baton_enable_relay(
         state->fd,
@@ -105,4 +127,13 @@ THEN( "^the function should return success$" )
     assert_that(
         state->result,
         is_equal_to(BATON_SUCCESS) );
+}
+
+THEN( "^the function should ignore the request$" )
+{
+    ScenarioScope<state> state;
+
+    assert_that(
+        state->result,
+        is_equal_to(BATON_IGNORED) );
 }

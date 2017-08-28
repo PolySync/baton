@@ -39,8 +39,9 @@ baton_result_t read_response(
 struct state
 {
     int fd;
-    char rx_buf[100];
+    char id[100];
     baton_result_t result;
+    char id_from_read_response[9] = "01234567";
 };
 
 
@@ -84,8 +85,8 @@ GIVEN( "^(.*) returns an error$" )
 
     state->result = baton_get_id(
         state->fd,
-        state->rx_buf,
-        sizeof(state->rx_buf) );
+        state->id,
+        sizeof(state->id) );
 }
 
 GIVEN( "^the function completes without error$" )
@@ -98,12 +99,13 @@ GIVEN( "^the function completes without error$" )
 
     expect(
         read_response,
-        will_return(BATON_SUCCESS) );
+        will_return(BATON_SUCCESS),
+        will_set_contents_of_parameter(response, state->id_from_read_response, sizeof(state->id_from_read_response)) );
 
     state->result = baton_get_id(
         state->fd,
-        state->rx_buf,
-        sizeof(state->rx_buf) );
+        state->id,
+        sizeof(state->id) );
 }
 
 THEN( "^the function should return an error$" )
@@ -122,4 +124,13 @@ THEN( "^the function should return success$" )
     assert_that(
         state->result,
         is_equal_to(BATON_SUCCESS) );
+}
+
+THEN( "^the function should return an id$" )
+{
+    ScenarioScope<state> state;
+
+    assert_that(
+        state->id,
+        is_equal_to_string(state->id_from_read_response) );
 }

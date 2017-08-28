@@ -51,6 +51,8 @@ struct state
     int fd;
     unsigned long bitfield;
     baton_result_t result;
+    char bitfield_from_read_response[5] = "BEEF";
+    unsigned long bitfield_from_strtoul = 48879;
 };
 
 
@@ -120,11 +122,12 @@ GIVEN( "^the function completes without error$" )
 
     expect(
         read_response,
-        will_return(BATON_SUCCESS) );
+        will_return(BATON_SUCCESS),
+        will_set_contents_of_parameter(response, state->bitfield_from_read_response, sizeof(state->bitfield_from_read_response)) );
 
     expect(
         strtoul,
-        will_return(0) );
+        will_return(state->bitfield_from_strtoul) );
 
         state->result = baton_get_relay_status_by_bitfield(
             state->fd,
@@ -147,4 +150,13 @@ THEN( "^the function should return success$" )
     assert_that(
         state->result,
         is_equal_to(BATON_SUCCESS) );
+}
+
+THEN( "^the function should return a status bitfield$" )
+{
+    ScenarioScope<state> state;
+
+    assert_that(
+        state->bitfield,
+        is_equal_to(state->bitfield_from_strtoul) );
 }

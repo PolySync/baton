@@ -21,3 +21,4 @@ Feature: Get relay status by bitfield
     Scenario: Function completes successfully
         Given the function completes without error
         Then the function should return success
+        And the function should return a status bitfield

@@ -40,6 +40,8 @@ struct state
 {
     int fd;
     baton_relay_status_t status;
+    char status_from_read_response[3] = "on";
+    baton_relay_status_t status_from_read_response_macro = BATON_RELAY_ON;
     baton_result_t result;
 };
 
@@ -99,7 +101,7 @@ GIVEN( "^the function completes without error$" )
     expect(
         read_response,
         will_return(BATON_SUCCESS),
-        will_set_contents_of_parameter(response, "on", sizeof("on") ) );
+        will_set_contents_of_parameter(response, state->status_from_read_response, sizeof(state->status_from_read_response) ) );
 
     state->result = baton_get_relay_status(
         state->fd,
@@ -123,4 +125,13 @@ THEN( "^the function should return success$" )
     assert_that(
         state->result,
         is_equal_to(BATON_SUCCESS) );
+}
+
+THEN( "^the function should return a status$" )
+{
+    ScenarioScope<state> state;
+
+    assert_that(
+        state->status,
+        is_equal_to(state->status_from_read_response_macro) );
 }

@@ -66,6 +66,7 @@ struct state
     int fd;
     int speed = B9600;
     baton_result_t result;
+    int fd_from_open = 5;
 };
 
 
@@ -183,7 +184,7 @@ GIVEN( "^the function completes without error$" )
 
     expect(
         open,
-        will_return(0) );
+        will_return(state->fd_from_open) );
 
     expect(
         tcgetattr,
@@ -226,4 +227,13 @@ THEN( "^the function should return success$" )
     assert_that(
         state->result,
         is_equal_to(BATON_SUCCESS) );
+}
+
+THEN( "^the function should return a file descriptor$" )
+{
+    ScenarioScope<state> state;
+
+    assert_that(
+        state->fd,
+        is_equal_to(state->fd_from_open) );
 }
