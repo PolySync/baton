@@ -19,6 +19,4 @@ set_target_properties(
     OUTPUT_NAME baton)
 
 
-if( TESTS )
-    add_subdirectory(tests)
-endif()
+add_subdirectory(tests)

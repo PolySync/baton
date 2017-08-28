@@ -1,8 +1,6 @@
 project(unit-tests)
 
 
-add_definitions( -DTESTS )
-
 add_library(
     libbaton-shared
     SHARED
@@ -78,7 +76,7 @@ foreach(STEP_DEFINITION_SRC_FILE ${STEP_DEFINITION_SRCS})
         DEPENDS
         ${STEP_TARGET}
         COMMAND
-        ${STEP_TARGET} --port=${CUCUMBER_PORT} >/dev/null & cucumber _2.0.0_ ${CMAKE_CURRENT_SOURCE_DIR}/features/${STEP_DEFINITION_FILE_NAME}.feature)
+        ${STEP_TARGET} --port=${CUCUMBER_PORT} >/dev/null 2>&1 & cucumber _2.0.0_ ${CMAKE_CURRENT_SOURCE_DIR}/features/${STEP_DEFINITION_FILE_NAME}.feature)
 
     add_dependencies(
         run-test-steps
