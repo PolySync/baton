@@ -58,17 +58,17 @@ baton_result_t baton_init(
  * @brief Get the firmware version of the relay module.
  *
  * @param [in] fd - The file descriptor of the serial interface.
- *        [out] rx_buf - The buffer in which to return the response.
- *        [in] rx_buf_length - The length of rx_buf.
+ *        [out] firmware - The buffer in which to return the response.
+ *        [in] firmware_length - The length of firmware.
  *
- * @return BATON_SUCCESS - Query was successful and rx_buf contains a valid response.
- *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
+ * @return BATON_SUCCESS - Query was successful and firmware contains a valid response.
+ *         BATON_ERROR - Query was unsuccessful and firmware does not contain a valid response.
  *
  */
 baton_result_t baton_get_firmware_version(
     int const fd,
-    char * const rx_buf,
-    int const rx_buf_length );
+    char * const firmware,
+    int const firmware_length );
 
 
 /**
@@ -90,17 +90,17 @@ baton_result_t baton_set_id(
  * @brief Get the ID of the relay module.
  *
  * @param [in] fd - The file descriptor of the serial interface.
- *        [out] rx_buf - The buffer in which to return the response.
- *        [in] rx_buf_length - The length of rx_buf.
+ *        [out] id - The buffer in which to return the response.
+ *        [in] id_length - The length of id.
  *
- * @return BATON_SUCCESS - Query was successful and rx_buf contains a valid response.
- *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
+ * @return BATON_SUCCESS - Query was successful and id contains a valid response.
+ *         BATON_ERROR - Query was unsuccessful and id does not contain a valid response.
  *
  */
 baton_result_t baton_get_id(
     int const fd,
-    char * const rx_buf,
-    int const rx_buf_length );
+    char * const id,
+    int const id_length );
 
 
 /**
@@ -110,8 +110,8 @@ baton_result_t baton_get_id(
  *        [in] relay - Number of relay to query.
  *        [out] status - The status of the relay.
  *
- * @return BATON_SUCCESS - Query was successful and rx_buf contains a valid response.
- *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
+ * @return BATON_SUCCESS - Query was successful and status contains a valid response.
+ *         BATON_ERROR - Query was unsuccessful and status does not contain a valid response.
  *
  */
 baton_result_t baton_get_relay_status(
@@ -128,8 +128,8 @@ baton_result_t baton_get_relay_status(
  *                       1 in bit position N means relay N is enabled and a
  *                       0 in bit position N means relay N is disabled.
  *
- * @return BATON_SUCCESS - Query was successful and rx_buf contains a valid response.
- *         BATON_ERROR - Query was unsuccessful and rx_buf does not contain a valid response.
+ * @return BATON_SUCCESS - Query was successful and bitfield contains a valid response.
+ *         BATON_ERROR - Query was unsuccessful and bitfield does not contain a valid response.
  *
  */
  baton_result_t baton_get_relay_status_by_bitfield(

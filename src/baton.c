@@ -13,17 +13,23 @@
 #include "internal/baton.h"
 
 
+/**
+ * @brief Macro for printing errors to stderr.
+ *
+ */
 #define PRINT_ERROR( message, submessage ) (\
-        fprintf( stderr, "ERROR\n"\
-                "  FILE: %s\n"\
-                "  FUNC: %s\n"\
-                "  LINE: %d\n"\
-                "  DESC: %s %s\n\n",\
-                __FILE__,\
-                __FUNCTION__,\
-                __LINE__,\
-                (message),\
-                (submessage) ))
+        fprintf(\
+            stderr,\
+            "ERROR\n"\
+            "  FILE: %s\n"\
+            "  FUNC: %s\n"\
+            "  LINE: %d\n"\
+            "  DESC: %s %s\n\n",\
+            __FILE__,\
+            __FUNCTION__,\
+            __LINE__,\
+            (message),\
+            (submessage) ))
 
 
 /**
@@ -40,6 +46,8 @@ baton_result_t baton_init(
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
+    struct termios tty_config = {0};
+    int fd_local;
 
 
     if ( (port == NULL)
@@ -53,9 +61,9 @@ baton_result_t baton_init(
 
     if ( result == BATON_SUCCESS )
     {
-        *fd = open( port, O_RDWR | O_NOCTTY | O_SYNC );
+        fd_local = open( port, O_RDWR | O_NOCTTY | O_SYNC );
 
-        if ( *fd < 0 )
+        if ( fd_local < 0 )
         {
             PRINT_ERROR( "open() error:", strerror(errno) );
 
@@ -64,13 +72,10 @@ baton_result_t baton_init(
     }
 
 
-    struct termios tty_config;
-    memset( &tty_config, 0, sizeof( tty_config) );
-
     if ( result == BATON_SUCCESS )
     {
         /* get current settings */
-        ret = tcgetattr( *fd, &tty_config );
+        ret = tcgetattr( fd_local, &tty_config );
 
         if ( ret != 0 )
         {
@@ -118,7 +123,7 @@ baton_result_t baton_init(
         tty_config.c_cc[VTIME] = 5;
 
         /* apply settings immediately */
-        ret = tcsetattr( *fd, TCSANOW, &tty_config );
+        ret = tcsetattr( fd_local, TCSANOW, &tty_config );
 
         if ( ret != 0 )
         {
@@ -129,29 +134,35 @@ baton_result_t baton_init(
     }
 
 
+    if ( result == BATON_SUCCESS )
+    {
+        *fd = fd_local;
+    }
+
+
     return result;
 }
 
 
 baton_result_t baton_get_firmware_version(
     int const fd,
-    char * const rx_buf,
-    int const rx_buf_length )
+    char * const version,
+    int const version_length )
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+    char version_local[BUFFER_LENGTH] = {0};
 
 
-    if ( rx_buf == NULL )
+    if ( version == NULL )
     {
         PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
@@ -182,7 +193,7 @@ baton_result_t baton_get_firmware_version(
 
     if ( result == BATON_SUCCESS )
     {
-        ret = read_response( fd, rx_buf, rx_buf_length );
+        ret = read_response( fd, version_local, sizeof(version_local) );
 
         if ( ret != BATON_SUCCESS )
         {
@@ -190,6 +201,12 @@ baton_result_t baton_get_firmware_version(
 
             result = BATON_ERROR;
         }
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        memcpy( version, version_local, version_length );
     }
 
 
@@ -203,6 +220,8 @@ baton_result_t baton_set_id(
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
 
 
     if ( id > 99999999 )
@@ -212,9 +231,6 @@ baton_result_t baton_set_id(
         result = BATON_ERROR;
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
@@ -250,23 +266,23 @@ baton_result_t baton_set_id(
 
 baton_result_t baton_get_id(
     int const fd,
-    char * const rx_buf,
-    int const rx_buf_length )
+    char * const id,
+    int const id_length )
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+    char id_local[BUFFER_LENGTH] = {0};
 
 
-    if ( rx_buf == NULL )
+    if ( id == NULL )
     {
         PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
@@ -297,7 +313,7 @@ baton_result_t baton_get_id(
 
     if ( result == BATON_SUCCESS )
     {
-        ret = read_response( fd, rx_buf, rx_buf_length );
+        ret = read_response( fd, id_local, sizeof(id_local) );
 
         if ( ret != BATON_SUCCESS )
         {
@@ -306,6 +322,13 @@ baton_result_t baton_get_id(
             result = BATON_ERROR;
         }
     }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        memcpy( id, id_local, id_length );
+    }
+
 
 
     return result;
@@ -319,6 +342,10 @@ baton_result_t baton_get_relay_status(
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+    char rx_buf[BUFFER_LENGTH] = {0};
+    baton_relay_status_t status_local = -1;
 
 
     if ( status == NULL )
@@ -328,9 +355,6 @@ baton_result_t baton_get_relay_status(
         result = BATON_ERROR;
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
@@ -360,8 +384,6 @@ baton_result_t baton_get_relay_status(
     }
 
 
-    char rx_buf[BUFFER_LENGTH] = {0};
-
     if ( result == BATON_SUCCESS )
     {
         ret = read_response( fd, rx_buf, sizeof(rx_buf) );
@@ -381,7 +403,7 @@ baton_result_t baton_get_relay_status(
 
         if ( ret == 0 )
         {
-            *status = BATON_RELAY_ON;
+            status_local = BATON_RELAY_ON;
         }
         else
         {
@@ -389,7 +411,7 @@ baton_result_t baton_get_relay_status(
 
             if ( ret == 0 )
             {
-                *status = BATON_RELAY_OFF;
+                status_local = BATON_RELAY_OFF;
             }
             else
             {
@@ -401,16 +423,26 @@ baton_result_t baton_get_relay_status(
     }
 
 
+    if ( result == BATON_SUCCESS )
+    {
+        *status = status_local;
+    }
+
+
     return result;
 }
 
 
 baton_result_t baton_get_relay_status_by_bitfield(
     int const fd,
-    unsigned long * bitfield )
+    unsigned long * const bitfield )
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
+    char rx_buf[BUFFER_LENGTH] = {0};
+    unsigned long bitfield_local;
 
 
     if ( bitfield == NULL )
@@ -420,9 +452,6 @@ baton_result_t baton_get_relay_status_by_bitfield(
         result = BATON_ERROR;
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
@@ -451,8 +480,6 @@ baton_result_t baton_get_relay_status_by_bitfield(
     }
 
 
-    char rx_buf[BUFFER_LENGTH] = {0};
-
     if ( result == BATON_SUCCESS )
     {
         ret = read_response( fd, rx_buf, sizeof(rx_buf) );
@@ -468,14 +495,20 @@ baton_result_t baton_get_relay_status_by_bitfield(
 
     if ( result == BATON_SUCCESS )
     {
-        *bitfield = strtoul( rx_buf, NULL, 16 );
+        bitfield_local = strtoul( rx_buf, NULL, 16 );
 
-        if ( *bitfield == ULONG_MAX )
+        if ( bitfield_local == ULONG_MAX )
         {
             PRINT_ERROR( "strtoul() error: ", strerror(errno) );
 
             result = BATON_ERROR;
         }
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        *bitfield = bitfield_local;
     }
 
 
@@ -489,9 +522,10 @@ baton_result_t baton_enable_relay(
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
-
-
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
     baton_relay_status_t relay_status;
+
 
     result = baton_get_relay_status( fd, relay, &relay_status );
 
@@ -510,9 +544,6 @@ baton_result_t baton_enable_relay(
         }
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
@@ -552,9 +583,10 @@ baton_result_t baton_disable_relay(
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
-
-
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
     baton_relay_status_t relay_status;
+
 
     result = baton_get_relay_status( fd, relay, &relay_status );
 
@@ -573,9 +605,6 @@ baton_result_t baton_disable_relay(
         }
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
@@ -615,6 +644,8 @@ baton_result_t baton_toggle_relays_by_bitfield(
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
+    char command[BUFFER_LENGTH] = {0};
+    int command_length = 0;
 
 
     if ( bitfield > 0xFFFF )
@@ -624,9 +655,6 @@ baton_result_t baton_toggle_relays_by_bitfield(
         result = BATON_ERROR;
     }
 
-
-    char command[BUFFER_LENGTH] = {0};
-    int command_length = 0;
 
     if ( result == BATON_SUCCESS )
     {
