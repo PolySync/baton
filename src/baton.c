@@ -1,3 +1,9 @@
+/**
+ * @file baton.c
+ * @brief Baton library.
+ */
+
+
 #include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -41,7 +47,6 @@
 
 baton_result_t baton_init(
     char const * const port,
-    int const speed,
     int * const fd )
 {
     baton_result_t result = BATON_SUCCESS;
@@ -88,10 +93,10 @@ baton_result_t baton_init(
 
     if ( result == BATON_SUCCESS )
     {
-        /* set output baud rate */
-        ret = cfsetospeed( &tty_config, speed );
+        /* set output baud rate - USB controller on relay doesn't care what speed */
+        ret = cfsetospeed( &tty_config, B19200 );
 
-        if ( ret != speed )
+        if ( ret < 0 )
         {
             PRINT_ERROR( "cfsetospeed() error:", strerror(errno) );
 
@@ -102,10 +107,10 @@ baton_result_t baton_init(
 
     if ( result == BATON_SUCCESS )
     {
-        /* set input  baud rate */
-        ret = cfsetispeed( &tty_config, speed );
+        /* set output baud rate - USB controller on relay doesn't care what speed */
+        ret = cfsetispeed( &tty_config, B19200 );
 
-        if ( ret != speed )
+        if ( ret < 0 )
         {
             PRINT_ERROR( "cfsetispeed() error:", strerror(errno) );
 

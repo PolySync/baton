@@ -2,11 +2,11 @@
 #include <cgreen/mocks.h>
 #include <cucumber-cpp/autodetect.hpp>
 
-#include <fcntl.h>
-#include <termios.h>
 
 extern "C"
 {
+    #include <fcntl.h>
+    #include <termios.h>
     #include "baton.h"
 }
 
@@ -64,7 +64,6 @@ int tcsetattr(
 struct state
 {
     int fd;
-    int speed = B9600;
     baton_result_t result;
     int fd_from_open = 5;
 };
@@ -80,14 +79,12 @@ GIVEN( "^the function is called with null pointer \"(.*)\" argument$" )
     {
         state->result = baton_init(
             NULL,
-            state->speed,
             &state->fd );
     }
     else if ( argument == "fd" )
     {
         state->result = baton_init(
             "/dev/null",
-            state->speed,
             NULL );
     }
 }
@@ -140,7 +137,7 @@ GIVEN( "^(.*) returns an error$" )
 
         expect(
             cfsetospeed,
-            will_return(state->speed) );
+            will_return(0) );
 
         expect(
             cfsetispeed,
@@ -158,11 +155,11 @@ GIVEN( "^(.*) returns an error$" )
 
         expect(
             cfsetospeed,
-            will_return(state->speed) );
+            will_return(0) );
 
         expect(
             cfsetispeed,
-            will_return(state->speed) );
+            will_return(0) );
 
         expect(
             cfmakeraw );
@@ -174,7 +171,6 @@ GIVEN( "^(.*) returns an error$" )
 
     state->result = baton_init(
         "/dev/null",
-        state->speed,
         &state->fd );
 }
 
@@ -192,11 +188,11 @@ GIVEN( "^the function completes without error$" )
 
     expect(
         cfsetospeed,
-        will_return(state->speed) );
+        will_return(B19200) );
 
     expect(
         cfsetispeed,
-        will_return(state->speed) );
+        will_return(B19200) );
 
     expect(
         cfmakeraw );
@@ -207,7 +203,6 @@ GIVEN( "^the function completes without error$" )
 
     state->result = baton_init(
         "/dev/null",
-        state->speed,
         &state->fd );
 }
 

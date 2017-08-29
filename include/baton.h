@@ -41,7 +41,7 @@ typedef enum {
 /**
  * @brief Initialize the serial interface settings.
  *
- * @param [in] speed - The baud rate to use for the serial interface.
+ * @param [in] port - The serial port associated with the serial interface.
  *        [out] fd - The created file descriptor of the serial interface.
  *
  * @return BATON_SUCCESS - Serial interface successfully initialized.
@@ -50,7 +50,6 @@ typedef enum {
  */
 baton_result_t baton_init(
     char const * const port,
-    int const speed,
     int * const fd );
 
 
