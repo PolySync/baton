@@ -77,13 +77,13 @@ GIVEN( "^the function is called with null pointer \"(.*)\" argument$" )
 
     if ( argument == "port" )
     {
-        state->result = baton_init(
+        state->result = baton_open(
             NULL,
             &state->fd );
     }
     else if ( argument == "fd" )
     {
-        state->result = baton_init(
+        state->result = baton_open(
             "/dev/null",
             NULL );
     }
@@ -169,7 +169,7 @@ GIVEN( "^(.*) returns an error$" )
             will_return(-1) );
     }
 
-    state->result = baton_init(
+    state->result = baton_open(
         "/dev/null",
         &state->fd );
 }
@@ -201,7 +201,7 @@ GIVEN( "^the function completes without error$" )
         tcsetattr,
         will_return(0) );
 
-    state->result = baton_init(
+    state->result = baton_open(
         "/dev/null",
         &state->fd );
 }

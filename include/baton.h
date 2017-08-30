@@ -39,18 +39,31 @@ typedef enum {
 
 
 /**
- * @brief Initialize the serial interface settings.
+ * @brief Open the serial interface.
  *
  * @param [in] port - The serial port associated with the serial interface.
  *        [out] fd - The created file descriptor of the serial interface.
  *
- * @return BATON_SUCCESS - Serial interface successfully initialized.
- *         BATON_ERROR - Serial interface unsuccessfully initialized due to error.
+ * @return BATON_SUCCESS - Serial interface successfully opened.
+ *         BATON_ERROR - Serial interface unsuccessfully opened due to error.
  *
  */
-baton_result_t baton_init(
+baton_result_t baton_open(
     char const * const port,
     int * const fd );
+
+
+/**
+ * @brief Close the serial interface.
+ *
+ * @param [out] fd - The created file descriptor of the serial interface.
+ *
+ * @return BATON_SUCCESS - Serial interface successfully closed.
+ *         BATON_ERROR - Serial interface unsuccessfully closed due to error.
+ *
+ */
+baton_result_t baton_close(
+    int const fd );
 
 
 /**

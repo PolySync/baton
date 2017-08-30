@@ -45,7 +45,7 @@
 #define BUFFER_LENGTH ( 25 )
 
 
-baton_result_t baton_init(
+baton_result_t baton_open(
     char const * const port,
     int * const fd )
 {
@@ -142,6 +142,38 @@ baton_result_t baton_init(
     if ( result == BATON_SUCCESS )
     {
         *fd = fd_local;
+    }
+
+
+    return result;
+}
+
+
+baton_result_t baton_close(
+    int const fd )
+{
+    baton_result_t result = BATON_SUCCESS;
+    int ret = -1;
+
+
+    if ( (fd < 0) )
+    {
+        PRINT_ERROR( "invalid file descriptor", "" );
+
+        result = BATON_ERROR;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        ret = close( fd );
+
+        if ( ret < 0 )
+        {
+            PRINT_ERROR( "close() error:", strerror(errno) );
+
+            result = BATON_ERROR;
+        }
     }
 
 
