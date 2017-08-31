@@ -273,6 +273,17 @@ baton_result_t baton_set_id(
 
     if ( result == BATON_SUCCESS )
     {
+        if ( id_length != 8 )
+        {
+            PRINT_ERROR( "id must be exactly 8 characters", "" );
+
+            result = BATON_ERROR;
+        }
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
         for ( i = 0; i < id_length; ++i )
         {
             ret = isgraph( id[i] );
@@ -313,6 +324,34 @@ baton_result_t baton_set_id(
             PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
+        }
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        char current_id[BUFFER_LENGTH] = {0};
+
+        ret = baton_get_id( fd, current_id, sizeof(current_id) );
+
+        if ( ret != BATON_SUCCESS )
+        {
+            PRINT_ERROR( "baton_get_id() error - could not verify ID was set", "" );
+
+            result = BATON_ERROR;
+        }
+        else
+        {
+            ret = strncmp( id, current_id, sizeof(id) );
+
+            if ( ret != 0 )
+            {
+                PRINT_ERROR(
+                    "Relay module's current ID does not match requested ID",
+                    "" );
+
+                result = BATON_ERROR;
+            }
         }
     }
 
@@ -630,6 +669,31 @@ baton_result_t baton_enable_relay(
     }
 
 
+    if ( result == BATON_SUCCESS )
+    {
+        baton_relay_status_t current_status;
+
+        ret = baton_get_relay_status( fd, relay, &current_status );
+
+        if ( ret != BATON_SUCCESS )
+        {
+            PRINT_ERROR( "baton_get_relay_status() error - could not verify relay was enabled", "" );
+
+            result = BATON_ERROR;
+        }
+        else
+        {
+            if ( current_status != BATON_RELAY_ON )
+            {
+                PRINT_ERROR(
+                    "Relay status does match attempt to enable", "" );
+
+                result = BATON_ERROR;
+            }
+        }
+    }
+
+
     return result;
 }
 
@@ -691,6 +755,32 @@ baton_result_t baton_disable_relay(
     }
 
 
+    if ( result == BATON_SUCCESS )
+    {
+        baton_relay_status_t current_status;
+
+        ret = baton_get_relay_status( fd, relay, &current_status );
+
+        if ( ret != BATON_SUCCESS )
+        {
+            PRINT_ERROR( "baton_get_relay_status() error - could not verify "
+                         "relay was disabled", "" );
+
+            result = BATON_ERROR;
+        }
+        else
+        {
+            if ( current_status != BATON_RELAY_OFF )
+            {
+                PRINT_ERROR(
+                    "Relay status does match attempt to disable", "" );
+
+                result = BATON_ERROR;
+            }
+        }
+    }
+
+
     return result;
 }
 
@@ -738,6 +828,32 @@ baton_result_t baton_toggle_relays_by_bitfield(
             PRINT_ERROR( "write_command() error", "" );
 
             result = BATON_ERROR;
+        }
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        unsigned int current_bitfield;
+
+        ret = baton_get_relay_status_by_bitfield( fd, &current_bitfield );
+
+        if ( ret != BATON_SUCCESS )
+        {
+            PRINT_ERROR( "baton_get_relay_status_by_bitfield() error - "
+                         "could not verify relay were toggled", "" );
+
+            result = BATON_ERROR;
+        }
+        else
+        {
+            if ( current_bitfield != bitfield )
+            {
+                PRINT_ERROR(
+                    "Relay statuses do not match requested bitfield", "" );
+
+                result = BATON_ERROR;
+            }
         }
     }
 
