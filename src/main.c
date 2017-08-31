@@ -226,7 +226,7 @@ baton_result_t parse_toggle_bitfield_cmd( int fd, yuck_t *argp )
     }
     else
     {
-        unsigned long bitfield = strtoul( argp->args[0], NULL, 16 );
+        unsigned int bitfield = strtoul( argp->args[0], NULL, 16 );
 
         result = baton_toggle_relays_by_bitfield( fd, bitfield );
     }
@@ -239,14 +239,14 @@ baton_result_t parse_toggle_bitfield_cmd( int fd, yuck_t *argp )
 baton_result_t parse_read_bitfield_cmd( int fd, yuck_t *argp )
 {
     baton_result_t result = BATON_ERROR;
-    unsigned long bitfield;
+    unsigned int bitfield;
 
 
     result = baton_get_relay_status_by_bitfield( fd, &bitfield );
 
     if ( result == BATON_SUCCESS )
     {
-        printf( "Status: %04lX\n", bitfield );
+        printf( "Status: %04X\n", bitfield );
     }
 
 

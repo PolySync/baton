@@ -148,7 +148,7 @@ baton_result_t baton_get_relay_status(
  */
  baton_result_t baton_get_relay_status_by_bitfield(
     int const fd,
-    unsigned long * bitfield );
+    unsigned int * bitfield );
 
 
 /**

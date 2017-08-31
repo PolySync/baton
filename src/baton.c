@@ -492,14 +492,14 @@ baton_result_t baton_get_relay_status(
 
 baton_result_t baton_get_relay_status_by_bitfield(
     int const fd,
-    unsigned long * const bitfield )
+    unsigned int * const bitfield )
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
     char command[BUFFER_LENGTH] = {0};
     int command_length = 0;
     char rx_buf[BUFFER_LENGTH] = {0};
-    unsigned long bitfield_local;
+    unsigned int bitfield_local;
 
 
     if ( bitfield == NULL )
