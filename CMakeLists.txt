@@ -19,4 +19,20 @@ set_target_properties(
     OUTPUT_NAME baton)
 
 
+add_executable(
+    baton
+    src/main.c)
+
+target_link_libraries(
+    baton
+    PRIVATE
+    libbaton-static)
+
+target_include_directories(
+    baton
+    PRIVATE
+    include
+    src )
+
+
 add_subdirectory(tests)
