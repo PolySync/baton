@@ -4,8 +4,29 @@
  */
 
 
- #ifndef _BATON_H_
- #define _BATON_H_
+#ifndef _BATON_H_
+#define _BATON_H_
+
+
+/**
+ * @brief Number of relays on board.
+ *
+ */
+#define RELAY_COUNT ( 16 )
+
+
+/**
+ * @brief Length of the bitfield representing relays.
+ *
+ */
+#define RELAY_BITFIELD_LENGTH ( 4 )
+
+
+/**
+ * @brief Length of the relay's module ID.
+ *
+ */
+#define MODULE_ID_LENGTH ( 8 )
 
 
 /**

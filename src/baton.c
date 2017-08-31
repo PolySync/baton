@@ -273,9 +273,13 @@ baton_result_t baton_set_id(
 
     if ( result == BATON_SUCCESS )
     {
-        if ( id_length != 8 )
+        if ( id_length != MODULE_ID_LENGTH )
         {
-            PRINT_ERROR( "id must be exactly 8 characters", "" );
+            char module_id_length[BUFFER_LENGTH];
+
+            snprintf( module_id_length, sizeof(module_id_length), "%d", MODULE_ID_LENGTH );
+
+            PRINT_ERROR( "ID length must be:", module_id_length );
 
             result = BATON_ERROR;
         }
@@ -999,10 +1003,11 @@ baton_result_t read_response(
             }
             else
             {
-                /* if byte is not alphanumeric, discard */
-                ret = isalnum( read_byte );
+                /* if byte is not printable, discard */
+                ret = isgraph( read_byte );
 
-                if ( ret != 0 )
+                if ( (ret != 0)
+                    && (read_byte != '>' ) )
                 {
                     /* do not write a response longer than the buffer can hold */
                     if ( response_index < length )
