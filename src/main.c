@@ -27,6 +27,8 @@ int main(
     if ( argp->device_arg == NULL )
     {
         yuck_auto_help( argp );
+
+        fprintf( stderr, "ERROR: DEVICE is a mandatory argument\n\n" );
     }
     else
     {
@@ -171,7 +173,7 @@ baton_result_t parse_set_id_cmd( int fd, yuck_t *argp )
     {
         char * id = argp->args[0];
 
-        result = baton_set_id( fd, id, sizeof(id) );
+        result = baton_set_id( fd, id, strlen(id) );
     }
 
 
