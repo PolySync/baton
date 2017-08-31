@@ -772,6 +772,8 @@ baton_result_t write_command(
         a state where it is ready to accept further commands */
         ret = write( fd, "\r", 1 );
 
+        usleep(1000);
+
         if ( ret < 0 )
         {
             PRINT_ERROR( "write() error:", strerror(errno) );
@@ -788,6 +790,8 @@ baton_result_t write_command(
         /* read back the empty response from the relay and throw it away */
         ret = read( fd, buf, BUFFER_LENGTH );
 
+        usleep(1000);
+
         if ( ret < 0 )
         {
             PRINT_ERROR( "read() error:", strerror(errno) );
@@ -801,6 +805,8 @@ baton_result_t write_command(
     {
         /* write the actual command */
         ret = write( fd, command, length );
+
+        usleep(1000);
 
         if ( ret < 0 )
         {
@@ -821,6 +827,8 @@ baton_result_t write_command(
                 && (result == BATON_SUCCESS) )
         {
             ret = read( fd, &read_byte, 1 );
+
+            usleep( 1000 );
 
             if ( ret < 0 )
             {
@@ -864,6 +872,8 @@ baton_result_t read_response(
                 && (result == BATON_SUCCESS) )
         {
             ret = read( fd, &read_byte, 1 );
+
+            usleep(1000);
 
             if ( ret < 0 )
             {
