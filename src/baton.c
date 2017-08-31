@@ -253,17 +253,19 @@ baton_result_t baton_get_firmware_version(
 
 baton_result_t baton_set_id(
     int const fd,
-    unsigned long const id )
+    char const * const id,
+    int const id_length )
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
     char command[BUFFER_LENGTH] = {0};
     int command_length = 0;
+    int i;
 
 
-    if ( id > 99999999 )
+    if ( id == NULL )
     {
-        PRINT_ERROR( "id must be between 0 and 99999999", "" );
+        PRINT_ERROR( "null pointer argument", "" );
 
         result = BATON_ERROR;
     }
@@ -271,9 +273,27 @@ baton_result_t baton_set_id(
 
     if ( result == BATON_SUCCESS )
     {
+        for ( i = 0; i < id_length; ++i )
+        {
+            ret = isgraph( id[i] );
+
+            if ( ret == 0 )
+            {
+                PRINT_ERROR( "id must be alphanumeric and/or symbols", "" );
+
+                result = BATON_ERROR;
+
+                break;
+            }
+        }
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
         /* command is of the form 'id set XXXXXXXX' where XXXXXXXX is a number
            between 0 and 99999999, padded with zeroes */
-        command_length = snprintf( command, sizeof(command), "id set %08lu\r", id );
+        command_length = snprintf( command, sizeof(command), "id set %s\r", id );
 
         if ( command_length < 0 )
         {

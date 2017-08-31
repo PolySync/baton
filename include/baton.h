@@ -87,7 +87,8 @@ baton_result_t baton_get_firmware_version(
  * @brief Set the ID of the relay module.
  *
  * @param [in] fd - The file descriptor of the serial interface.
- *        [in] id - ID to set.
+ *        [out] id - The ID to set (alphanumeric and/or symbols).
+ *        [in] id_length - The length of id.
  *
  * @return BATON_SUCCESS - Setting the ID was successful.
  *         BATON_ERROR - Setting the ID was not successful.
@@ -95,7 +96,8 @@ baton_result_t baton_get_firmware_version(
  */
 baton_result_t baton_set_id(
     int const fd,
-    unsigned long const id );
+    char const * const id,
+    int const id_length );
 
 
 /**

@@ -31,7 +31,7 @@ baton_result_t write_command(
 struct state
 {
     int fd;
-    unsigned long id;
+    char id[8] = {'1', '!', ';', '[', '-', '+', '=', '%'};
     baton_result_t result;
 };
 
@@ -44,7 +44,7 @@ GIVEN( "^the function is called with invalid \"(.*)\" argument$" )
 
     if ( argument == "id" )
     {
-        state->result = baton_set_id( state->fd, 100000000 );
+        state->result = baton_set_id( state->fd, " ", sizeof(" ") );
     }
 }
 
@@ -59,7 +59,7 @@ GIVEN( "^(.*) returns an error$" )
         expect( write_command, will_return(BATON_ERROR) );
     }
 
-    state->result = baton_set_id( state->fd, 0 );
+    state->result = baton_set_id( state->fd, state->id, sizeof(state->id) );
 }
 
 GIVEN( "^the function completes without error$" )
@@ -68,7 +68,7 @@ GIVEN( "^the function completes without error$" )
 
     expect( write_command, will_return(BATON_SUCCESS) );
 
-    state->result = baton_set_id( state->fd, 0 );
+    state->result = baton_set_id( state->fd, state->id, sizeof(state->id) );
 }
 
 THEN( "^the function should return an error$" )
