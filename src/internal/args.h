@@ -6,6 +6,8 @@
 
 #define YUCK_OPTARG_NONE	((void*)0x1U)
 
+#define package_version ( "1.0" )
+
 enum yuck_cmds_e {
 	/* value used when no command was specified */
 	BATON_CMD_NONE = 0U,
@@ -19,7 +21,7 @@ enum yuck_cmds_e {
 	BATON_CMD_GET_FIRMWARE_VERSION,
 	BATON_CMD_TOGGLE_BITFIELD,
 	BATON_CMD_READ_BITFIELD,
-	
+
 	/* convenience identifiers */
 	YUCK_NOCMD = BATON_CMD_NONE,
 	YUCK_NCMDS = BATON_CMD_READ_BITFIELD
@@ -477,7 +479,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 			}
 			goto back_from_BATON_CMD_READ_BITFIELD_longopt;
 		}
-		
+
 	}
 
 	shortopt:
@@ -542,7 +544,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 
 
 
-				
+
 			case 'h':
 				/* invoke auto action and exit */
 				yuck_auto_help(tgt);
@@ -584,7 +586,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_ENABLE_shortopt;
 		}
@@ -611,7 +613,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_DISABLE_shortopt;
 		}
@@ -638,7 +640,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_READ_shortopt;
 		}
@@ -665,7 +667,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_SET_ID_shortopt;
 		}
@@ -692,7 +694,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_GET_ID_shortopt;
 		}
@@ -719,7 +721,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_GET_FIRMWARE_VERSION_shortopt;
 		}
@@ -746,7 +748,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_TOGGLE_BITFIELD_shortopt;
 		}
@@ -773,11 +775,11 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				;
 				goto BATON_CMD_NONE_shortopt;
 
-				
+
 			}
 			goto back_from_BATON_CMD_READ_BITFIELD_shortopt;
 		}
-		
+
 	}
 
 	arg:
@@ -852,28 +854,28 @@ Baton - Library and command line interface for Numato USB Relay modules\n\
 		break;
 
 	case BATON_CMD_ENABLE:
-		puts("Usage: baton enable [RELAY]...\n\
+		puts("Usage: baton enable RELAY\n\
 \n\
 Enable relay number RELAY\n\
 ");
 		break;
 
 	case BATON_CMD_DISABLE:
-		puts("Usage: baton disable [RELAY]...\n\
+		puts("Usage: baton disable RELAY\n\
 \n\
 Disable relay number RELAY\n\
 ");
 		break;
 
 	case BATON_CMD_READ:
-		puts("Usage: baton read [RELAY]...\n\
+		puts("Usage: baton read RELAY\n\
 \n\
 Get current relay status of relay number RELAY\n\
 ");
 		break;
 
 	case BATON_CMD_SET_ID:
-		puts("Usage: baton set_id [ID]...\n\
+		puts("Usage: baton set_id ID\n\
 \n\
 Set module ID to ID\n\
 ");
@@ -889,21 +891,21 @@ Get current module ID\n\
 	case BATON_CMD_GET_FIRMWARE_VERSION:
 		puts("Usage: baton get_firmware_version\n\
 \n\
-Get module's firmware get_firmware_version\n\
+Get module's firmware version\n\
 ");
 		break;
 
 	case BATON_CMD_TOGGLE_BITFIELD:
-		puts("Usage: baton toggle_bitfield [BITFIELD]...\n\
+		puts("Usage: baton toggle_bitfield BITFIELD\n\
 \n\
-Toggle multiple relays with a 16-bit bitfield\n\
+Toggle multiple relays with 4-bit BITFIELD\n\
 ");
 		break;
 
 	case BATON_CMD_READ_BITFIELD:
 		puts("Usage: baton read_bitfield\n\
 \n\
-Get current relay status of multiple relays as a 16-bit bitfield\n\
+Get current relay status of multiple relays as 4-bit bitfield\n\
 ");
 		break;
 
@@ -928,11 +930,11 @@ static void yuck_auto_help(const yuck_t src[static 1U])
   set_id      Set module ID to ID\n\
   get_id      Get current module ID\n\
   get_firmware_version\n\
-              Get module's firmware get_firmware_version\n\
+              Get module's firmware version\n\
   toggle_bitfield\n\
-              Toggle multiple relays with a 16-bit bitfield\n\
+              Toggle multiple relays with 4-bit BITFIELD\n\
   read_bitfield\n\
-              Get current relay status of multiple relays as a 16-bit bitfield\n\
+              Get current relay status of multiple relays as 4-bit bitfield\n\
 ");
 	}
 
@@ -945,7 +947,7 @@ Options accepted by all commands:");
 Common options:\n\
   -h, --help            display this help and exit\n\
   -V, --version         output version information and exit\n\
-  -d, --device=DEVICE   Serial device corresponding to the relay module.\n\
+  -d, --device=DEVICE   Serial device corresponding to the relay module. [REQUIRED]\n\
 ");
 	}
 
@@ -955,7 +957,7 @@ Common options:\n\
 		puts("\
   -h, --help            display this help and exit\n\
   -V, --version         output version information and exit\n\
-  -d, --device=DEVICE   Serial device corresponding to the relay module.\n\
+  -d, --device=DEVICE   Serial device corresponding to the relay module. [REQUIRED]\n\
 ");
 		break;
 
