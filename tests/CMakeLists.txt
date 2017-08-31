@@ -39,7 +39,7 @@ add_custom_target(
     libbaton-shared)
 
 add_custom_target(
-    run-test-steps
+    run-unit-tests
     DEPENDS
     test-steps)
 
@@ -72,15 +72,15 @@ foreach(STEP_DEFINITION_SRC_FILE ${STEP_DEFINITION_SRCS})
     file(WRITE ${CMAKE_CURRENT_SOURCE_DIR}/features/step_definitions/cucumber.wire "host: localhost\nport: ${CUCUMBER_PORT}")
 
     add_custom_target(
-        run-${STEP_DEFINITION_SOURCE_FILE_TARGET}-steps
+        run-${STEP_DEFINITION_SOURCE_FILE_TARGET}-unit-test
         DEPENDS
         ${STEP_TARGET}
         COMMAND
         ${STEP_TARGET} --port=${CUCUMBER_PORT} >/dev/null 2>&1 & cucumber _2.0.0_ ${CMAKE_CURRENT_SOURCE_DIR}/features/${STEP_DEFINITION_FILE_NAME}.feature)
 
     add_dependencies(
-        run-test-steps
-        run-${STEP_DEFINITION_SOURCE_FILE_TARGET}-steps)
+        run-unit-tests
+        run-${STEP_DEFINITION_SOURCE_FILE_TARGET}-unit-test)
 
     target_compile_options(
         ${STEP_TARGET}
