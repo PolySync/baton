@@ -1,0 +1,28 @@
+Usage: baton
+Baton - Library and command line interface for Numato USB Relay modules
+
+  -d, --device=DEVICE        Serial device corresponding to the relay module. [REQUIRED]
+
+Usage: baton enable RELAY
+Enable relay number RELAY
+
+Usage: baton disable RELAY
+Disable relay number RELAY
+
+Usage: baton read RELAY
+Get current relay status of relay number RELAY
+
+Usage: baton set_id ID
+Set module ID to ID
+
+Usage: baton get_id
+Get current module ID
+
+Usage: baton get_firmware_version
+Get module's firmware version
+
+Usage: baton toggle_bitfield BITFIELD
+Toggle multiple relays with 4-bit BITFIELD
+
+Usage: baton read_bitfield
+Get current relay status of multiple relays as 4-bit bitfield
