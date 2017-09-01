@@ -16,7 +16,6 @@ int main(
     int argc,
     char ** argv)
 {
-    int ret = -1;
     baton_result_t result = BATON_ERROR;
     yuck_t argp[1];
     int fd;
@@ -30,6 +29,12 @@ int main(
         yuck_auto_help( argp );
 
         fprintf( stderr, "ERROR: DEVICE is a mandatory argument\n\n" );
+    }
+    else if ( argp->cmd == BATON_CMD_NONE )
+    {
+        yuck_auto_help( argp );
+
+        fprintf( stderr, "ERROR: COMMAND is a mandatory argument\n\n" );
     }
     else
     {
@@ -57,11 +62,11 @@ int main(
         }
         else if ( argp->cmd == BATON_CMD_GET_ID )
         {
-            result = parse_get_id_cmd( fd, argp );
+            result = parse_get_id_cmd( fd );
         }
         else if ( argp->cmd == BATON_CMD_GET_FIRMWARE_VERSION )
         {
-            result = parse_get_firmware_version_cmd( fd, argp );
+            result = parse_get_firmware_version_cmd( fd );
         }
         else if ( argp->cmd == BATON_CMD_TOGGLE_BITFIELD )
         {
@@ -69,7 +74,7 @@ int main(
         }
         else if ( argp->cmd == BATON_CMD_READ_BITFIELD )
         {
-            result = parse_read_bitfield_cmd( fd, argp );
+            result = parse_read_bitfield_cmd( fd );
         }
 
         baton_close( fd );
@@ -89,7 +94,6 @@ int main(
 baton_result_t parse_enable_cmd( int fd, yuck_t *argp )
 {
     baton_result_t result = BATON_ERROR;
-    int ret = -1;
     int relay_num;
 
 
@@ -108,7 +112,6 @@ baton_result_t parse_enable_cmd( int fd, yuck_t *argp )
 baton_result_t parse_disable_cmd( int fd, yuck_t *argp )
 {
     baton_result_t result = BATON_ERROR;
-    int ret = -1;
     int relay_num;
 
 
@@ -127,7 +130,6 @@ baton_result_t parse_disable_cmd( int fd, yuck_t *argp )
 baton_result_t parse_read_cmd( int fd, yuck_t *argp )
 {
     baton_result_t result = BATON_ERROR;
-    int ret = -1;
     int relay_num;
     baton_relay_status_t status;
 
@@ -177,7 +179,7 @@ baton_result_t parse_set_id_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_get_id_cmd( int fd, yuck_t *argp )
+baton_result_t parse_get_id_cmd( int fd )
 {
     baton_result_t result = BATON_ERROR;
     char id[9];
@@ -195,13 +197,13 @@ baton_result_t parse_get_id_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_get_firmware_version_cmd( int fd, yuck_t *argp )
+baton_result_t parse_get_firmware_version_cmd( int fd )
 {
     baton_result_t result = BATON_ERROR;
     char version[9];
 
 
-    result = baton_get_firmware_version(fd, version, sizeof(version) );
+    result = baton_get_firmware_version( fd, version, sizeof(version) );
 
     if ( result == BATON_SUCCESS )
     {
@@ -231,7 +233,7 @@ baton_result_t parse_toggle_bitfield_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_read_bitfield_cmd( int fd, yuck_t *argp )
+baton_result_t parse_read_bitfield_cmd( int fd )
 {
     baton_result_t result = BATON_ERROR;
     unsigned long bitfield;
@@ -254,7 +256,6 @@ baton_result_t check_relay_argument(
     yuck_t * const argp )
 {
     baton_result_t result = BATON_ERROR;
-    int ret = -1;
     int relay_num_local;
     char * relay_arg_string = NULL;
 
@@ -270,11 +271,11 @@ baton_result_t check_relay_argument(
         relay_arg_string = argp->args[0];
         size_t relay_arg_string_len = strlen( relay_arg_string );
 
-        int i = 0;
+        size_t i = 0;
 
         for ( i = 0; i < relay_arg_string_len; ++i )
         {
-            ret = isdigit( relay_arg_string[i] );
+            int ret = isdigit( relay_arg_string[i] );
 
             if ( ret == 0 )
             {
@@ -320,7 +321,6 @@ baton_result_t check_id_argument(
     yuck_t * const argp )
 {
     baton_result_t result = BATON_ERROR;
-    int ret = -1;
     char * id_arg_string;
     size_t id_arg_string_len;
 
@@ -345,11 +345,11 @@ baton_result_t check_id_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        int i = 0;
+        size_t i = 0;
 
         for ( i = 0; i < id_arg_string_len; ++i )
         {
-            ret = isgraph( id_arg_string[i] );
+            int ret = isgraph( id_arg_string[i] );
 
             if ( ret == 0 )
             {
@@ -383,7 +383,6 @@ baton_result_t check_bitfield_argument(
     yuck_t * const argp )
 {
     baton_result_t result = BATON_ERROR;
-    int ret = -1;
     unsigned long bitfield_local;
     char * bitfield_arg_string = NULL;
     size_t bitfield_arg_string_len = -1;
@@ -409,11 +408,11 @@ baton_result_t check_bitfield_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        int i = 0;
+        size_t i = 0;
 
         for ( i = 0; i < bitfield_arg_string_len; ++i )
         {
-            ret = isxdigit( bitfield_arg_string[i] );
+            int ret = isxdigit( bitfield_arg_string[i] );
 
             if ( ret == 0 )
             {

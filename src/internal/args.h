@@ -394,7 +394,7 @@ static int yuck_parse(yuck_t tgt[static 1U], int argc, char *argv[])
 				yuck_auto_version(tgt);
 				goto success;
 			} else if (yuck_streqp(op, "device")) {
-				tgt->device_arg = arg ?: argv[++i];
+				tgt->device_arg = arg ? arg : argv[++i];
 			} else {
 				/* grml */
 				fprintf(stderr, "baton: unrecognized option `--%s'\n", op);

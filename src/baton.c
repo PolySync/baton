@@ -32,7 +32,7 @@
             "  LINE: %d\n"\
             "  DESC: %s %s\n\n",\
             __FILE__,\
-            __FUNCTION__,\
+            __func__,\
             __LINE__,\
             (message),\
             (submessage) ))
@@ -346,7 +346,7 @@ baton_result_t baton_set_id(
         }
         else
         {
-            ret = strncmp( id, current_id, sizeof(id) );
+            ret = strncmp( id, current_id, id_length );
 
             if ( ret != 0 )
             {
@@ -633,7 +633,7 @@ baton_result_t baton_enable_relay(
     {
         PRINT_ERROR( "baton_get_relay_status() error", "" );
 
-        result == BATON_ERROR;
+        result = BATON_ERROR;
     }
     else
     {

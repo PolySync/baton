@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 project(baton)
 
 
+set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -pedantic -Wextra" )
+
 add_library(
     libbaton-static
     STATIC
