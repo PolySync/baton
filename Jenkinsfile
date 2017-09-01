@@ -14,7 +14,7 @@ node('worker') {
       echo 'Build Complete!'
     }
     stage('Unit Tests') {
-      sh 'mkdir build_tests && cd build_tests && cmake .. -DCMAKE_BUILD_TYPE=Release && make run-test-steps'
+      sh 'mkdir build_tests && cd build_tests && cmake .. -DCMAKE_BUILD_TYPE=Release -DTESTS=ON && make run-unit-tests'
       echo 'Tests Complete!'
     }
   }

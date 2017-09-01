@@ -12,7 +12,14 @@
 #include "internal/main.h"
 
 
-int main(
+#ifdef TESTS
+#define MAIN test_main
+#else
+#define MAIN main
+#endif
+
+
+int MAIN(
     int argc,
     char ** argv)
 {
@@ -84,7 +91,7 @@ int main(
     yuck_free(argp);
 
 
-    return result;
+    return (int)result;
 }
 
 

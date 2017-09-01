@@ -64,7 +64,7 @@ typedef enum {
  * @brief Enumeration of possible relay statuses.
  *
  */
- typedef enum {
+typedef enum {
     /* Relay is on. */
     BATON_RELAY_ON,
 
@@ -181,7 +181,7 @@ baton_result_t baton_get_relay_status(
  *         BATON_ERROR - Query was unsuccessful and bitfield does not contain a valid response.
  *
  */
- baton_result_t baton_get_relay_status_by_bitfield(
+baton_result_t baton_get_relay_status_by_bitfield(
     int const fd,
     unsigned long * bitfield );
 
@@ -230,7 +230,7 @@ baton_result_t baton_disable_relay(
  *         BATON_ERROR - Toggling the relays was unsuccessful.
  *
  */
- baton_result_t baton_toggle_relays_by_bitfield(
+baton_result_t baton_toggle_relays_by_bitfield(
     int const fd,
     unsigned long const bitfield );
 

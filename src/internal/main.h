@@ -11,6 +11,13 @@
 #include "baton.h"
 
 
+/* For testing, yuck_t must be mocked as args.h is not compilable by the
+C++ compiler used for tests */
+#ifdef __cplusplus
+typedef int yuck_t;
+#endif
+
+
 baton_result_t parse_enable_cmd( int fd, yuck_t *argp );
 baton_result_t parse_disable_cmd( int fd, yuck_t *argp );
 baton_result_t parse_read_cmd( int fd, yuck_t *argp );

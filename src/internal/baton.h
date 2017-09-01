@@ -4,14 +4,14 @@
  */
 
 
- #ifndef _INTERNAL_BATON_H_
- #define _INTERNAL_BATON_H_
+#ifndef _INTERNAL_BATON_H_
+#define _INTERNAL_BATON_H_
 
 
- #include "baton.h"
+#include "baton.h"
 
 
- baton_result_t write_command(
+baton_result_t write_command(
     int const fd,
     char const * const command,
     int const length );
