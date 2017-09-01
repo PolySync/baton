@@ -26,6 +26,14 @@ baton_result_t write_command(
     return (baton_result_t) mock(fd, command, length);
 }
 
+baton_result_t baton_get_id(
+    int const fd,
+    char * const id,
+    int const id_length )
+{
+    return (baton_result_t) mock(fd, id, id_length);
+}
+
 
 /* Test State */
 struct state
@@ -56,7 +64,13 @@ GIVEN( "^(.*) returns an error$" )
 
     if ( function_name == "write_command()" )
     {
-        expect( write_command, will_return(BATON_ERROR) );
+        expect(write_command, will_return(BATON_ERROR) );
+    }
+    else if ( function_name == "baton_get_id()" )
+    {
+        expect( write_command, will_return(BATON_SUCCESS) );
+
+        expect( baton_get_id, will_return(BATON_ERROR) );
     }
 
     state->result = baton_set_id( state->fd, state->id, sizeof(state->id) );
@@ -67,6 +81,11 @@ GIVEN( "^the function completes without error$" )
     ScenarioScope<state> state;
 
     expect( write_command, will_return(BATON_SUCCESS) );
+
+    expect(
+        baton_get_id,
+        will_return(BATON_SUCCESS),
+        will_set_contents_of_parameter( id, &state->id, sizeof(&state->id)) );
 
     state->result = baton_set_id( state->fd, state->id, sizeof(state->id) );
 }

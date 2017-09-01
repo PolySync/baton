@@ -26,12 +26,20 @@ baton_result_t write_command(
     return (baton_result_t) mock(fd, command, length);
 }
 
+baton_result_t baton_get_relay_status_by_bitfield(
+    int const fd,
+    unsigned long * const bitfield )
+{
+    return (baton_result_t) mock(fd, bitfield);
+}
+
 
 /* Test State */
 struct state
 {
     int fd;
     unsigned int relay;
+    unsigned long bitfield = 0xBEEF;
     baton_result_t result;
 };
 
@@ -60,10 +68,20 @@ GIVEN( "^(.*) returns an error$" )
             write_command,
             will_return(BATON_ERROR) );
     }
+    else if ( function_name == "baton_get_relay_status_by_bitfield()" )
+    {
+        expect(
+            write_command,
+            will_return(BATON_SUCCESS) );
+
+        expect(
+            baton_get_relay_status_by_bitfield,
+            will_return(BATON_ERROR) );
+    }
 
     state->result = baton_toggle_relays_by_bitfield(
         state->fd,
-        0 );
+        state->bitfield );
 }
 
 GIVEN( "^the function completes without error$" )
@@ -74,9 +92,14 @@ GIVEN( "^the function completes without error$" )
         write_command,
         will_return(BATON_SUCCESS) );
 
+    expect(
+        baton_get_relay_status_by_bitfield,
+        will_return(BATON_SUCCESS),
+        will_set_contents_of_parameter( bitfield, &state->bitfield, sizeof(&state->bitfield)) );
+
     state->result = baton_toggle_relays_by_bitfield(
         state->fd,
-        0 );
+        state->bitfield );
 }
 
 THEN( "^the function should return an error$" )

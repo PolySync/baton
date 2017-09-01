@@ -13,8 +13,9 @@ Feature: Set module ID
         Then the function should return an error
 
         Examples:
-            | function        |
-            | write_command() |
+            | function           |
+            | write_command()    |
+            | baton_get_id() |
 
     Scenario: Function completes successfully
         Given the function completes without error

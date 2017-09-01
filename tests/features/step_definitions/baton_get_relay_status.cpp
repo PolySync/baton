@@ -94,7 +94,7 @@ GIVEN( "^the function completes without error$" )
 {
     ScenarioScope<state> state;
 
-    expect(
+    always_expect(
         write_command,
         will_return(BATON_SUCCESS) );
 

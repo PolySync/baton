@@ -40,6 +40,8 @@ struct state
 {
     int fd;
     unsigned int relay;
+    baton_relay_status_t status_before = BATON_RELAY_ON;
+    baton_relay_status_t status_after = BATON_RELAY_OFF;
     baton_result_t result;
 };
 
@@ -79,16 +81,19 @@ GIVEN( "^the function completes without error$" )
 {
     ScenarioScope<state> state;
 
-    baton_relay_status_t relay_status = BATON_RELAY_ON;
-
     expect(
         baton_get_relay_status,
         will_return(BATON_SUCCESS),
-        will_set_contents_of_parameter( status, &relay_status, sizeof(&relay_status)) );
+        will_set_contents_of_parameter( status, &state->status_before, sizeof(&state->status_before)) );
 
     expect(
         write_command,
         will_return(BATON_SUCCESS) );
+
+    expect(
+        baton_get_relay_status,
+        will_return(BATON_SUCCESS),
+        will_set_contents_of_parameter( status, &state->status_after, sizeof(&state->status_after)) );
 
     state->result = baton_disable_relay(
         state->fd,

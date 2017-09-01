@@ -13,8 +13,9 @@ Feature: Toggle multiple relays with a bitfield
         Then the function should return an error
 
         Examples:
-            | function                 |
-            | write_command()          |
+            | function                                      |
+            | write_command()                               |
+            | baton_get_relay_status_by_bitfield()          |
 
     Scenario: Function completes successfully
         Given the function completes without error
