@@ -535,14 +535,14 @@ baton_result_t baton_get_relay_status(
 
 baton_result_t baton_get_relay_status_by_bitfield(
     int const fd,
-    unsigned int * const bitfield )
+    unsigned long * const bitfield )
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
     char command[BUFFER_LENGTH] = {0};
     int command_length = 0;
     char rx_buf[BUFFER_LENGTH] = {0};
-    unsigned int bitfield_local;
+    unsigned long bitfield_local;
 
 
     if ( bitfield == NULL )
@@ -791,7 +791,7 @@ baton_result_t baton_disable_relay(
 
 baton_result_t baton_toggle_relays_by_bitfield(
     int const fd,
-    unsigned int const bitfield )
+    unsigned long const bitfield )
 {
     baton_result_t result = BATON_SUCCESS;
     int ret = -1;
@@ -812,7 +812,7 @@ baton_result_t baton_toggle_relays_by_bitfield(
         /* command is of the form 'relay writeall XXXX' where XXXX is a bitfield
            between 00000 and ffff, where a 1 in bit position N enables relay
            N and a 0 in bit position N disables relay N */
-        command_length = snprintf( command, sizeof(command), "relay writeall %04x\r", bitfield );
+        command_length = snprintf( command, sizeof(command), "relay writeall %04lx\r", bitfield );
 
         if ( command_length < 0 )
         {
@@ -838,7 +838,7 @@ baton_result_t baton_toggle_relays_by_bitfield(
 
     if ( result == BATON_SUCCESS )
     {
-        unsigned int current_bitfield;
+        unsigned long current_bitfield;
 
         ret = baton_get_relay_status_by_bitfield( fd, &current_bitfield );
 

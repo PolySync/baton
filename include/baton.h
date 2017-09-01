@@ -169,7 +169,7 @@ baton_result_t baton_get_relay_status(
  */
  baton_result_t baton_get_relay_status_by_bitfield(
     int const fd,
-    unsigned int * bitfield );
+    unsigned long * bitfield );
 
 
 /**
@@ -218,7 +218,7 @@ baton_result_t baton_disable_relay(
  */
  baton_result_t baton_toggle_relays_by_bitfield(
     int const fd,
-    unsigned int const bitfield );
+    unsigned long const bitfield );
 
 
 #endif /* _BATON_H_ */

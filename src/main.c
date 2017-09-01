@@ -216,7 +216,7 @@ baton_result_t parse_get_firmware_version_cmd( int fd, yuck_t *argp )
 baton_result_t parse_toggle_bitfield_cmd( int fd, yuck_t *argp )
 {
     baton_result_t result = BATON_ERROR;
-    unsigned int bitfield;
+    unsigned long bitfield;
 
 
     result = check_bitfield_argument( &bitfield, argp );
@@ -234,14 +234,14 @@ baton_result_t parse_toggle_bitfield_cmd( int fd, yuck_t *argp )
 baton_result_t parse_read_bitfield_cmd( int fd, yuck_t *argp )
 {
     baton_result_t result = BATON_ERROR;
-    unsigned int bitfield;
+    unsigned long bitfield;
 
 
     result = baton_get_relay_status_by_bitfield( fd, &bitfield );
 
     if ( result == BATON_SUCCESS )
     {
-        printf( "Status: %04X\n", bitfield );
+        printf( "Status: %04lX\n", bitfield );
     }
 
 
@@ -379,12 +379,12 @@ baton_result_t check_id_argument(
 
 
 baton_result_t check_bitfield_argument(
-    unsigned int * const bitfield,
+    unsigned long * const bitfield,
     yuck_t * const argp )
 {
     baton_result_t result = BATON_ERROR;
     int ret = -1;
-    unsigned int bitfield_local;
+    unsigned long bitfield_local;
     char * bitfield_arg_string = NULL;
     size_t bitfield_arg_string_len = -1;
 
