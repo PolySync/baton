@@ -275,11 +275,15 @@ baton_result_t baton_set_id(
     {
         if ( id_length != MODULE_ID_LENGTH )
         {
-            char module_id_length[BUFFER_LENGTH];
+            char error_string[BUFFER_LENGTH] = {0};
 
-            snprintf( module_id_length, sizeof(module_id_length), "%d", MODULE_ID_LENGTH );
+            snprintf(
+                error_string,
+                sizeof(error_string),
+                "ID must be %d printable characters",
+                MODULE_ID_LENGTH );
 
-            PRINT_ERROR( "ID length must be:", module_id_length );
+            PRINT_ERROR( error_string, "" );
 
             result = BATON_ERROR;
         }
@@ -801,7 +805,16 @@ baton_result_t baton_toggle_relays_by_bitfield(
 
     if ( bitfield > 0xFFFF )
     {
-        PRINT_ERROR( "bitfield must be between 0x0000 and 0xFFFF", "" );
+        char error_string[BUFFER_LENGTH] = {0};
+
+        snprintf(
+            error_string,
+            sizeof(error_string),
+            "Bitfield must be between %04X and %04X",
+            RELAY_BITFIELD_SIZE_MIN,
+            RELAY_BITFIELD_SIZE_MAX );
+
+        PRINT_ERROR( error_string, "" );
 
         result = BATON_ERROR;
     }

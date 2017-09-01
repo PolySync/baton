@@ -434,8 +434,9 @@ baton_result_t check_bitfield_argument(
 
         fprintf(
             stderr,
-            "ERROR: Invalid arguments - BITFIELD must be between 0000 and %04X\n",
-            RELAY_BITFIELD_LENGTH );
+            "ERROR: Invalid arguments - BITFIELD must be between %04X and %04X\n",
+            RELAY_BITFIELD_SIZE_MIN,
+            RELAY_BITFIELD_SIZE_MAX );
     }
 
 

@@ -23,6 +23,20 @@
 
 
 /**
+* @brief Minimum size of the bitfield representing relays.
+*
+*/
+#define RELAY_BITFIELD_SIZE_MIN ( 0x0000 )
+
+
+/**
+* @brief Maximum size of the bitfield representing relays.
+*
+*/
+#define RELAY_BITFIELD_SIZE_MAX ( 0xFFFF )
+
+
+/**
  * @brief Length of the relay's module ID.
  *
  */
