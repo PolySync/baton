@@ -12,6 +12,8 @@
 #include "internal/main.h"
 
 
+/* For testing, main() must be renamed to not conflict with the main() running
+in the test library */
 #ifdef TESTS
 #define MAIN test_main
 #else
@@ -98,7 +100,9 @@ int MAIN(
 
 
 /* Internal */
-baton_result_t parse_enable_cmd( int fd, yuck_t *argp )
+baton_result_t parse_enable_cmd(
+    int const fd,
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num;
@@ -116,7 +120,9 @@ baton_result_t parse_enable_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_disable_cmd( int fd, yuck_t *argp )
+baton_result_t parse_disable_cmd(
+    int const fd,
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num;
@@ -134,7 +140,9 @@ baton_result_t parse_disable_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_read_cmd( int fd, yuck_t *argp )
+baton_result_t parse_read_cmd(
+    int const fd,
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num;
@@ -168,7 +176,9 @@ baton_result_t parse_read_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_set_id_cmd( int fd, yuck_t *argp )
+baton_result_t parse_set_id_cmd(
+    int const fd,
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     char id[MODULE_ID_LENGTH];
@@ -186,7 +196,8 @@ baton_result_t parse_set_id_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_get_id_cmd( int fd )
+baton_result_t parse_get_id_cmd(
+    int const fd )
 {
     baton_result_t result = BATON_ERROR;
     char id[9];
@@ -204,7 +215,8 @@ baton_result_t parse_get_id_cmd( int fd )
 }
 
 
-baton_result_t parse_get_firmware_version_cmd( int fd )
+baton_result_t parse_get_firmware_version_cmd(
+    int const fd )
 {
     baton_result_t result = BATON_ERROR;
     char version[9];
@@ -222,7 +234,9 @@ baton_result_t parse_get_firmware_version_cmd( int fd )
 }
 
 
-baton_result_t parse_toggle_bitfield_cmd( int fd, yuck_t *argp )
+baton_result_t parse_toggle_bitfield_cmd(
+    int const fd,
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     unsigned long bitfield;
@@ -240,7 +254,8 @@ baton_result_t parse_toggle_bitfield_cmd( int fd, yuck_t *argp )
 }
 
 
-baton_result_t parse_read_bitfield_cmd( int fd )
+baton_result_t parse_read_bitfield_cmd(
+    int const fd )
 {
     baton_result_t result = BATON_ERROR;
     unsigned long bitfield;
@@ -260,7 +275,7 @@ baton_result_t parse_read_bitfield_cmd( int fd )
 
 baton_result_t check_relay_argument(
     int * const relay_num,
-    yuck_t * const argp )
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num_local;
@@ -325,7 +340,7 @@ baton_result_t check_relay_argument(
 
 baton_result_t check_id_argument(
     char * const id,
-    yuck_t * const argp )
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     char * id_arg_string;
@@ -387,7 +402,7 @@ baton_result_t check_id_argument(
 
 baton_result_t check_bitfield_argument(
     unsigned long * const bitfield,
-    yuck_t * const argp )
+    yuck_t const * const argp )
 {
     baton_result_t result = BATON_ERROR;
     unsigned long bitfield_local;

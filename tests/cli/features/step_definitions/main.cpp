@@ -27,60 +27,60 @@ baton_result_t baton_open(
 }
 
 baton_result_t baton_close(
-    int fd )
+    int const fd )
 {
     return (baton_result_t) mock(fd);
 }
 
 baton_result_t parse_enable_cmd(
-    int fd,
-    yuck_t *argp )
+    int const fd,
+    yuck_t const * const argp )
 {
     return (baton_result_t) mock(fd, argp);
 }
 
 baton_result_t parse_disable_cmd(
-    int fd,
-    yuck_t *argp )
+    int const fd,
+    yuck_t const * const argp )
 {
     return (baton_result_t) mock(fd, argp);
 }
 
 baton_result_t parse_read_cmd(
-    int fd,
-    yuck_t *argp )
+    int const fd,
+    yuck_t const * const argp )
 {
     return (baton_result_t) mock(fd, argp);
 }
 
 baton_result_t parse_set_id_cmd(
-    int fd,
-    yuck_t *argp )
+    int const fd,
+    yuck_t const * const argp )
 {
     return (baton_result_t) mock(fd, argp);
 }
 
 baton_result_t parse_get_id_cmd(
-    int fd )
+    int const fd )
 {
     return (baton_result_t) mock(fd);
 }
 
 baton_result_t parse_get_firmware_version_cmd(
-    int fd )
+    int const fd )
 {
     return (baton_result_t) mock(fd);
 }
 
 baton_result_t parse_toggle_bitfield_cmd(
-    int fd,
-    yuck_t *argp )
+    int const fd,
+    yuck_t const * const argp )
 {
     return (baton_result_t) mock(fd, argp);
 }
 
 baton_result_t parse_read_bitfield_cmd(
-    int fd )
+    int const fd )
 {
     return (baton_result_t) mock(fd);
 }

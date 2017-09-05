@@ -19,7 +19,7 @@ using namespace cgreen;
 /* Mocks */
 baton_result_t check_relay_argument(
     int * const relay_num,
-    yuck_t * const argp )
+    yuck_t const * const argp )
 {
     return (baton_result_t) mock(relay_num, argp);
 }

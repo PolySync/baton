@@ -19,7 +19,7 @@ using namespace cgreen;
 /* Mocks */
 baton_result_t check_id_argument(
     char * const id,
-    yuck_t * const argp )
+    yuck_t const * const argp )
 {
     return (baton_result_t) mock(id, argp);
 }
