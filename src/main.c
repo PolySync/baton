@@ -55,19 +55,19 @@ int MAIN(
     {
         if ( argp->cmd == BATON_CMD_ENABLE )
         {
-            result = parse_enable_cmd( fd, argp );
+            result = parse_enable_cmd( fd, argp->nargs, argp->args );
         }
         else if ( argp->cmd == BATON_CMD_DISABLE )
         {
-            result = parse_disable_cmd( fd, argp );
+            result = parse_disable_cmd( fd, argp->nargs, argp->args );
         }
         else if ( argp->cmd == BATON_CMD_READ )
         {
-            result = parse_read_cmd( fd, argp );
+            result = parse_read_cmd( fd, argp->nargs, argp->args );
         }
         else if ( argp->cmd == BATON_CMD_SET_ID )
         {
-            result = parse_set_id_cmd( fd, argp );
+            result = parse_set_id_cmd( fd, argp->nargs, argp->args );
         }
         else if ( argp->cmd == BATON_CMD_GET_ID )
         {
@@ -79,7 +79,7 @@ int MAIN(
         }
         else if ( argp->cmd == BATON_CMD_TOGGLE_BITFIELD )
         {
-            result = parse_toggle_bitfield_cmd( fd, argp );
+            result = parse_toggle_bitfield_cmd( fd, argp->nargs, argp->args );
         }
         else if ( argp->cmd == BATON_CMD_READ_BITFIELD )
         {
@@ -102,13 +102,33 @@ int MAIN(
 /* Internal */
 baton_result_t parse_enable_cmd(
     int const fd,
-    yuck_t const * const argp )
+    size_t const arg_count,
+    char const * args[] )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num;
 
 
-    result = check_relay_argument( &relay_num, argp );
+    if ( arg_count == 1 )
+    {
+        result = BATON_SUCCESS;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        result = check_relay_argument( &relay_num, args[0] );
+    }
+
+
+    if ( result != BATON_SUCCESS )
+    {
+        fprintf(
+            stderr,
+            "ERROR: Invalid arguments - RELAY must be between 0 and %d\n",
+            (RELAY_COUNT-1) );
+    }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -122,13 +142,33 @@ baton_result_t parse_enable_cmd(
 
 baton_result_t parse_disable_cmd(
     int const fd,
-    yuck_t const * const argp )
+    size_t const arg_count,
+    char const * args[] )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num;
 
 
-    result = check_relay_argument( &relay_num, argp );
+    if ( arg_count == 1 )
+    {
+        result = BATON_SUCCESS;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        result = check_relay_argument( &relay_num, args[0] );
+    }
+
+
+    if ( result != BATON_SUCCESS )
+    {
+        fprintf(
+            stderr,
+            "ERROR: Invalid arguments - RELAY must be between 0 and %d\n",
+            (RELAY_COUNT-1) );
+    }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -142,14 +182,34 @@ baton_result_t parse_disable_cmd(
 
 baton_result_t parse_read_cmd(
     int const fd,
-    yuck_t const * const argp )
+    size_t const arg_count,
+    char const * args[] )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num;
     baton_relay_status_t status;
 
 
-    result = check_relay_argument( &relay_num, argp );
+    if ( arg_count == 1 )
+    {
+        result = BATON_SUCCESS;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        result = check_relay_argument( &relay_num, args[0] );
+    }
+
+
+    if ( result != BATON_SUCCESS )
+    {
+        fprintf(
+            stderr,
+            "ERROR: Invalid arguments - RELAY must be between 0 and %d\n",
+            (RELAY_COUNT-1) );
+    }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -178,13 +238,33 @@ baton_result_t parse_read_cmd(
 
 baton_result_t parse_set_id_cmd(
     int const fd,
-    yuck_t const * const argp )
+    size_t const arg_count,
+    char const * args[] )
 {
     baton_result_t result = BATON_ERROR;
     char id[MODULE_ID_LENGTH];
 
 
-    result = check_id_argument( id, argp );
+    if ( arg_count == 1 )
+    {
+        result = BATON_SUCCESS;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        result = check_id_argument( id, args[0] );
+    }
+
+
+    if ( result != BATON_SUCCESS )
+    {
+        fprintf(
+            stderr,
+            "ERROR: Invalid arguments - ID must be %d printable characters\n",
+            MODULE_ID_LENGTH );
+    }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -236,13 +316,34 @@ baton_result_t parse_get_firmware_version_cmd(
 
 baton_result_t parse_toggle_bitfield_cmd(
     int const fd,
-    yuck_t const * const argp )
+    size_t const arg_count,
+    char const * args[] )
 {
     baton_result_t result = BATON_ERROR;
     unsigned long bitfield;
 
 
-    result = check_bitfield_argument( &bitfield, argp );
+    if ( arg_count == 1 )
+    {
+        result = BATON_SUCCESS;
+    }
+
+
+    if ( result == BATON_SUCCESS )
+    {
+        result = check_bitfield_argument( &bitfield, args[0] );
+    }
+
+
+    if ( result != BATON_SUCCESS )
+    {
+        fprintf(
+            stderr,
+            "ERROR: Invalid arguments - BITFIELD must be between %04X and %04X\n",
+            RELAY_BITFIELD_SIZE_MIN,
+            RELAY_BITFIELD_SIZE_MAX );
+    }
+
 
     if ( result == BATON_SUCCESS )
     {
@@ -275,14 +376,14 @@ baton_result_t parse_read_bitfield_cmd(
 
 baton_result_t check_relay_argument(
     int * const relay_num,
-    yuck_t const * const argp )
+    char const * const relay_arg )
 {
     baton_result_t result = BATON_ERROR;
     int relay_num_local;
-    char * relay_arg_string = NULL;
+    size_t relay_arg_len;
 
 
-    if ( argp->nargs == 1 )
+    if ( relay_arg != NULL )
     {
         result = BATON_SUCCESS;
     }
@@ -290,14 +391,13 @@ baton_result_t check_relay_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        relay_arg_string = argp->args[0];
-        size_t relay_arg_string_len = strlen( relay_arg_string );
+        relay_arg_len = strlen( relay_arg );
 
         size_t i = 0;
 
-        for ( i = 0; i < relay_arg_string_len; ++i )
+        for ( i = 0; i < relay_arg_len; ++i )
         {
-            int ret = isdigit( relay_arg_string[i] );
+            int ret = isdigit( relay_arg[i] );
 
             if ( ret == 0 )
             {
@@ -309,7 +409,7 @@ baton_result_t check_relay_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        relay_num_local = atoi( relay_arg_string );
+        relay_num_local = atoi( relay_arg );
 
         if ( (relay_num_local < 0)
             || (relay_num_local > (RELAY_COUNT-1)) )
@@ -323,15 +423,6 @@ baton_result_t check_relay_argument(
     {
         *relay_num = relay_num_local;
     }
-    else
-    {
-        yuck_auto_help( argp );
-
-        fprintf(
-            stderr,
-            "ERROR: Invalid arguments - RELAY must be between 0 and %d\n",
-            (RELAY_COUNT-1) );
-    }
 
 
     return result;
@@ -340,14 +431,13 @@ baton_result_t check_relay_argument(
 
 baton_result_t check_id_argument(
     char * const id,
-    yuck_t const * const argp )
+    char const * const id_arg )
 {
     baton_result_t result = BATON_ERROR;
-    char * id_arg_string;
-    size_t id_arg_string_len;
+    size_t id_arg_len;
 
 
-    if ( argp->nargs == 1 )
+    if ( id_arg != NULL )
     {
         result = BATON_SUCCESS;
     }
@@ -355,10 +445,9 @@ baton_result_t check_id_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        id_arg_string = argp->args[0];
-        id_arg_string_len = strlen( id_arg_string );
+        id_arg_len = strlen( id_arg );
 
-        if ( id_arg_string_len != MODULE_ID_LENGTH )
+        if ( id_arg_len != MODULE_ID_LENGTH )
         {
             result = BATON_ERROR;
         }
@@ -369,9 +458,9 @@ baton_result_t check_id_argument(
     {
         size_t i = 0;
 
-        for ( i = 0; i < id_arg_string_len; ++i )
+        for ( i = 0; i < id_arg_len; ++i )
         {
-            int ret = isgraph( id_arg_string[i] );
+            int ret = isgraph( id_arg[i] );
 
             if ( ret == 0 )
             {
@@ -383,16 +472,7 @@ baton_result_t check_id_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        strncpy(id, id_arg_string, id_arg_string_len );
-    }
-    else
-    {
-        yuck_auto_help( argp );
-
-        fprintf(
-            stderr,
-            "ERROR: Invalid arguments - ID must be %d printable characters\n",
-            MODULE_ID_LENGTH );
+        strncpy(id, id_arg, MODULE_ID_LENGTH );
     }
 
 
@@ -402,15 +482,14 @@ baton_result_t check_id_argument(
 
 baton_result_t check_bitfield_argument(
     unsigned long * const bitfield,
-    yuck_t const * const argp )
+    char const * const bitfield_arg )
 {
     baton_result_t result = BATON_ERROR;
     unsigned long bitfield_local;
-    char * bitfield_arg_string = NULL;
-    size_t bitfield_arg_string_len = -1;
+    size_t bitfield_arg_len = -1;
 
 
-    if ( argp->nargs == 1 )
+    if ( bitfield_arg != NULL )
     {
         result = BATON_SUCCESS;
     }
@@ -418,10 +497,9 @@ baton_result_t check_bitfield_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        bitfield_arg_string = argp->args[0];
-        bitfield_arg_string_len = strlen( bitfield_arg_string );
+        bitfield_arg_len = strlen( bitfield_arg );
 
-        if ( bitfield_arg_string_len != RELAY_BITFIELD_LENGTH )
+        if ( bitfield_arg_len != RELAY_BITFIELD_LENGTH )
         {
             result = BATON_ERROR;
         }
@@ -432,9 +510,9 @@ baton_result_t check_bitfield_argument(
     {
         size_t i = 0;
 
-        for ( i = 0; i < bitfield_arg_string_len; ++i )
+        for ( i = 0; i < bitfield_arg_len; ++i )
         {
-            int ret = isxdigit( bitfield_arg_string[i] );
+            int ret = isxdigit( bitfield_arg[i] );
 
             if ( ret == 0 )
             {
@@ -446,19 +524,9 @@ baton_result_t check_bitfield_argument(
 
     if ( result == BATON_SUCCESS )
     {
-        bitfield_local = strtoul( argp->args[0], NULL, 16 );
+        bitfield_local = strtoul( bitfield_arg, NULL, 16 );
 
         *bitfield = bitfield_local;
-    }
-    else
-    {
-        yuck_auto_help( argp );
-
-        fprintf(
-            stderr,
-            "ERROR: Invalid arguments - BITFIELD must be between %04X and %04X\n",
-            RELAY_BITFIELD_SIZE_MIN,
-            RELAY_BITFIELD_SIZE_MAX );
     }
 
 

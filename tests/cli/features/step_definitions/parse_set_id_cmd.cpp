@@ -19,9 +19,9 @@ using namespace cgreen;
 /* Mocks */
 baton_result_t check_id_argument(
     char * const id,
-    yuck_t const * const argp )
+    char const * const id_arg )
 {
-    return (baton_result_t) mock(id, argp);
+    return (baton_result_t) mock(id, id_arg);
 }
 
 baton_result_t baton_set_id(
@@ -47,7 +47,8 @@ GIVEN( "^(.*) returns an error$" )
     ScenarioScope<state> state;
 
     int fd = 0;
-    yuck_t argp[1];
+    size_t arg_count = 1;
+    char const *args[] = {"00000000"};
 
     if ( function_name == "check_id_argument()" )
     {
@@ -66,15 +67,52 @@ GIVEN( "^(.*) returns an error$" )
             will_return(BATON_ERROR) );
     }
 
-    state->result = parse_set_id_cmd( fd, argp );
+    state->result = parse_set_id_cmd( fd, arg_count, args );
 }
 
 
-THEN( "^the function should return an error$" )
+GIVEN( "^(.*) number of arguments are given$" )
 {
+    REGEX_PARAM( size_t, arg_count );
+
     ScenarioScope<state> state;
 
-    assert_that(
-        state->result,
-        is_equal_to(BATON_ERROR) );
+    int fd = 0;
+
+    char const *args[] = {"00000000"};
+
+    if ( arg_count == 1 )
+    {
+        expect(
+            check_id_argument,
+            will_return(BATON_SUCCESS) );
+
+        expect(
+            baton_set_id,
+            will_return(BATON_SUCCESS) );
+    }
+
+    state->result = parse_set_id_cmd( fd, arg_count, args );
+}
+
+
+
+THEN( "^the function should return (.*)$" )
+{
+    REGEX_PARAM( std::string, return_code );
+
+    ScenarioScope<state> state;
+
+    if ( return_code == "BATON_ERROR" )
+    {
+        assert_that(
+            state->result,
+            is_equal_to(BATON_ERROR) );
+    }
+    else if ( return_code == "BATON_SUCCESS" )
+    {
+        assert_that(
+            state->result,
+            is_equal_to(BATON_SUCCESS) );
+    }
 }

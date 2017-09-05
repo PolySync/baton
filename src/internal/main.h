@@ -20,19 +20,23 @@ typedef int yuck_t;
 
 baton_result_t parse_enable_cmd(
     int const fd,
-    yuck_t const * const argp );
+    size_t const arg_count,
+    char const * args[] );
 
 baton_result_t parse_disable_cmd(
     int const fd,
-    yuck_t const * const argp );
+    size_t const arg_count,
+    char const * args[] );
 
 baton_result_t parse_read_cmd(
     int const fd,
-    yuck_t const * const argp );
+    size_t const arg_count,
+    char const * args[] );
 
 baton_result_t parse_set_id_cmd(
     int const fd,
-    yuck_t const * const argp );
+    size_t const arg_count,
+    char const * args[] );
 
 baton_result_t parse_get_id_cmd(
     int const fd );
@@ -42,22 +46,23 @@ baton_result_t parse_get_firmware_version_cmd(
 
 baton_result_t parse_toggle_bitfield_cmd(
     int const fd,
-    yuck_t const * const argp );
+    size_t const arg_count,
+    char const * args[] );
 
 baton_result_t parse_read_bitfield_cmd(
     int const fd );
 
 baton_result_t check_relay_argument(
     int * const relay_num,
-    yuck_t const * const argp );
+    char const * const relay_arg );
 
 baton_result_t check_id_argument(
     char * const id,
-    yuck_t const * const argp );
+    char const * const id_arg );
 
 baton_result_t check_bitfield_argument(
     unsigned long * const bitfield,
-    yuck_t const * const argp );
+    char const * const bitfield_arg );
 
 
 #endif /* _INTERNAL_BATON_H_ */

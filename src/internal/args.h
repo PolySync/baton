@@ -38,7 +38,7 @@ struct yuck_cmd_enable_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -52,7 +52,7 @@ struct yuck_cmd_disable_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -66,7 +66,7 @@ struct yuck_cmd_read_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -80,7 +80,7 @@ struct yuck_cmd_set_id_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -94,7 +94,7 @@ struct yuck_cmd_get_id_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -108,7 +108,7 @@ struct yuck_cmd_get_firmware_version_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -122,7 +122,7 @@ struct yuck_cmd_toggle_bitfield_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -136,7 +136,7 @@ struct yuck_cmd_read_bitfield_s {
 
 	/* left-over arguments, the command string is never a part of this */
 	size_t nargs;
-	char **args;
+	char const **args;
 
 	/* help is handled automatically */
 	/* version is handled automatically */
@@ -153,7 +153,7 @@ union yuck_u {
 		/* left-over arguments,
 		 * the command string is never a part of this */
 		size_t nargs;
-		char **args;
+		char const **args;
 
 		/* slots common to all commands */
 		/* help is handled automatically */

@@ -19,9 +19,9 @@ using namespace cgreen;
 /* Mocks */
 baton_result_t check_bitfield_argument(
     unsigned long * const bitfield,
-    yuck_t const * const argp )
+    char const * const bitfield_arg )
 {
-    return (baton_result_t) mock(bitfield, argp);
+    return (baton_result_t) mock(bitfield, bitfield_arg);
 }
 
 baton_result_t baton_toggle_relays_by_bitfield(
@@ -46,7 +46,8 @@ GIVEN( "^(.*) returns an error$" )
     ScenarioScope<state> state;
 
     int fd = 0;
-    yuck_t argp[1];
+    size_t arg_count = 1;
+    char const *args[] = {"0000"};
 
     if ( function_name == "check_bitfield_argument()" )
     {
@@ -65,15 +66,51 @@ GIVEN( "^(.*) returns an error$" )
             will_return(BATON_ERROR) );
     }
 
-    state->result = parse_toggle_bitfield_cmd( fd, argp );
+    state->result = parse_toggle_bitfield_cmd( fd, arg_count, args );
 }
 
 
-THEN( "^the function should return an error$" )
+GIVEN( "^(.*) number of arguments are given$" )
 {
+    REGEX_PARAM( size_t, arg_count );
+
     ScenarioScope<state> state;
 
-    assert_that(
-        state->result,
-        is_equal_to(BATON_ERROR) );
+    int fd = 0;
+
+    char const *args[] = {"0000"};
+
+    if ( arg_count == 1 )
+    {
+        expect(
+            check_bitfield_argument,
+            will_return(BATON_SUCCESS) );
+
+        expect(
+            baton_toggle_relays_by_bitfield,
+            will_return(BATON_SUCCESS) );
+    }
+
+    state->result = parse_toggle_bitfield_cmd( fd, arg_count, args );
+}
+
+
+THEN( "^the function should return (.*)$" )
+{
+    REGEX_PARAM( std::string, return_code );
+
+    ScenarioScope<state> state;
+
+    if ( return_code == "BATON_ERROR" )
+    {
+        assert_that(
+            state->result,
+            is_equal_to(BATON_ERROR) );
+    }
+    else if ( return_code == "BATON_SUCCESS" )
+    {
+        assert_that(
+            state->result,
+            is_equal_to(BATON_SUCCESS) );
+    }
 }
