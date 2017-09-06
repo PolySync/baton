@@ -1,25 +1,7 @@
 project(tests)
 
 
-if(TESTS)
-    add_definitions(-DTESTS)
-endif()
-
-
-add_library(
-    libbaton-shared
-    SHARED
-    ${CMAKE_SOURCE_DIR}/src/baton.c)
-
-target_include_directories(
-    libbaton-shared
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/include)
-
-set_target_properties(
-    libbaton-shared
-    PROPERTIES
-    OUTPUT_NAME baton)
+add_definitions(-DTESTS)
 
 
 add_library(
